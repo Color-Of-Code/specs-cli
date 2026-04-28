@@ -79,6 +79,8 @@ Three paths matter and are referenced throughout this README and in `specs docto
 | `specs cr drain --id <NNN> [--yes] [--dry-run]`                                                               | interactively `git mv` CR-local files to canonical model homes |
 | `specs baseline check`                                                                                        | verify component baselines (alias for `lint --baselines`)     |
 | `specs baseline update [--only <substr>] [--dry-run]`                                                         | rewrite stale SHAs in the Components table from `git log`     |
+| `specs link check`                                                                                            | verify symmetry between requirements (`Implemented By`) and features/components (`Requirements`) |
+| `specs visualize traceability [--format dot\|mermaid] [--out <path>]`                                          | render the requirement ↔ implementer graph                    |
 | `specs vscode init [--force]`                                                                                 | write `.vscode/tasks.json` with every Specs task              |
 
 All write commands accept `--dry-run` where applicable.
@@ -109,7 +111,7 @@ Other optional knobs: `change_requests_dir`, `model_dir`, `baselines_file`, `mar
 
 ## Status
 
-Phase 1 — lint, layout auto-detection, `init`/`bootstrap`/`tools update`, **managed mode** (cache + auto-fetch). **Phase 2 (in progress)** — `scaffold`, `cr new`, `cr status`, `cr drain`, `baseline check`, `baseline update`, `vscode init` shipped; `link` still pending.
+Phase 1 — lint, layout auto-detection, `init`/`bootstrap`/`tools update`, **managed mode** (cache + auto-fetch). **Phase 2** — `scaffold`, `cr {new,status,drain}`, `baseline {check,update}`, `link check`, `vscode init` shipped. **Phase 3 (in progress)** — `visualize traceability` (DOT and Mermaid) shipped; VS Code extension still planned.
 
 ## Development
 

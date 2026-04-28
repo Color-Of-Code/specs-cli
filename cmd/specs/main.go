@@ -30,6 +30,7 @@ func init() {
 		{"cr", "change-request operations (new, status, drain)", cmdCR},
 		{"baseline", "verify or update component baselines (check, update)", cmdBaseline},
 		{"link", "verify cross-links between requirements and implementers (check)", cmdLink},
+		{"visualize", "render the traceability graph (DOT or Mermaid)", cmdVisualize},
 		{"vscode", "manage .vscode integration (init)", cmdVSCode},
 	}
 }
