@@ -53,7 +53,13 @@ fi
 # Ensure node deps + compile.
 ( cd "$ext_dir" && npm ci --silent && npm run compile )
 
+# Sync extension version to SPECS_VERSION (if set; CI passes the tag-derived value).
+if [[ -n "${SPECS_VERSION:-}" ]]; then
+  ( cd "$ext_dir" && npm version --no-git-tag-version --allow-same-version "$SPECS_VERSION" >/dev/null )
+fi
+
 # Package.
+mkdir -p "$repo_root/dist"
 ( cd "$ext_dir" && npx --yes @vscode/vsce package --target "$target" --no-dependencies -o "$repo_root/dist/specs-${target}.vsix" )
 
 echo "built: dist/specs-${target}.vsix"
