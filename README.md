@@ -79,6 +79,7 @@ Three paths matter and are referenced throughout this README and in `specs docto
 | `specs cr drain --id <NNN> [--yes] [--dry-run]`                                                               | interactively `git mv` CR-local files to canonical model homes |
 | `specs baseline check`                                                                                        | verify component baselines (alias for `lint --baselines`)     |
 | `specs baseline update [--only <substr>] [--dry-run]`                                                         | rewrite stale SHAs in the Components table from `git log`     |
+| `specs vscode init [--force]`                                                                                 | write `.vscode/tasks.json` with every Specs task              |
 
 All write commands accept `--dry-run` where applicable.
 
@@ -108,7 +109,7 @@ Other optional knobs: `change_requests_dir`, `model_dir`, `baselines_file`, `mar
 
 ## Status
 
-Phase 1 — lint, layout auto-detection, `init`/`bootstrap`/`tools update`, **managed mode** (cache + auto-fetch). **Phase 2 (in progress)** — `scaffold`, `cr new`, `cr status`, `cr drain`, `baseline check`, `baseline update` shipped; `link`, richer `vscode init` still pending.
+Phase 1 — lint, layout auto-detection, `init`/`bootstrap`/`tools update`, **managed mode** (cache + auto-fetch). **Phase 2 (in progress)** — `scaffold`, `cr new`, `cr status`, `cr drain`, `baseline check`, `baseline update`, `vscode init` shipped; `link` still pending.
 
 ## Development
 
