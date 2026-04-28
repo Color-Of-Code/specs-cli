@@ -111,7 +111,7 @@ Other optional knobs: `change_requests_dir`, `model_dir`, `baselines_file`, `mar
 
 ## Status
 
-Phase 1 — lint, layout auto-detection, `init`/`bootstrap`/`tools update`, **managed mode** (cache + auto-fetch). **Phase 2** — `scaffold`, `cr {new,status,drain}`, `baseline {check,update}`, `link check`, `vscode init` shipped. **Phase 3 (in progress)** — `visualize traceability` (DOT and Mermaid) shipped; VS Code extension still planned.
+Phase 1 — lint, layout auto-detection, `init`/`bootstrap`/`tools update`, **managed mode** (cache + auto-fetch). **Phase 2** — `scaffold`, `cr {new,status,drain}`, `baseline {check,update}`, `link check`, `vscode init` shipped. **Phase 3** — `visualize traceability` (DOT and Mermaid), `templates_schema` enforcement, `--layout submodule` shipped. **VS Code extension** under `extension/` (in progress; see [extension/README.md](extension/README.md)).
 
 ## Development
 
@@ -119,6 +119,11 @@ Phase 1 — lint, layout auto-detection, `init`/`bootstrap`/`tools update`, **ma
 go test ./...
 go build ./...
 go install ./cmd/specs
+
+# Extension (TypeScript)
+cd extension
+npm ci
+npm run compile
 ```
 
-Cross-platform release builds are produced by GoReleaser on git tags (`v*.*.*`). See [`.goreleaser.yaml`](./.goreleaser.yaml).
+Cross-platform release builds are produced by GoReleaser on git tags (`v*.*.*`). See [`.goreleaser.yaml`](./.goreleaser.yaml). Per-platform `.vsix` artifacts are attached to GitHub releases via [`scripts/build-extension.sh`](scripts/build-extension.sh).

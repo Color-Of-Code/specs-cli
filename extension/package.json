@@ -1,0 +1,70 @@
+{
+  "name": "specs",
+  "displayName": "Specs",
+  "description": "VS Code support for the specs-cli framework: lint, change-requests, traceability visualisation.",
+  "version": "0.3.0",
+  "publisher": "jdehaan",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jdehaan/specs-cli.git",
+    "directory": "extension"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "keywords": ["specs", "requirements", "traceability", "markdown"],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "workspaceContains:.specs.yaml",
+    "workspaceContains:specs/.specs.yaml"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "specs.doctor",
+        "title": "Specs: Doctor",
+        "category": "Specs"
+      },
+      {
+        "command": "specs.lint",
+        "title": "Specs: Lint",
+        "category": "Specs"
+      }
+    ],
+    "configuration": {
+      "title": "Specs",
+      "properties": {
+        "specs.useGlobalBinary": {
+          "type": "boolean",
+          "default": false,
+          "description": "Prefer the 'specs' binary on PATH over the one bundled with the extension."
+        },
+        "specs.cliPath": {
+          "type": "string",
+          "default": "",
+          "description": "Explicit path to the specs CLI binary. Overrides bundled and PATH lookup."
+        },
+        "specs.toolsAutoUpdate": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run 'specs tools update' on activation."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p .",
+    "watch": "tsc -p . --watch",
+    "lint": "tsc -p . --noEmit",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.2.0",
+    "typescript": "^5.4.0"
+  }
+}

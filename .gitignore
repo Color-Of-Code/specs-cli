@@ -1,1 +1,7 @@
 /specs
+/specs
+extension/node_modules/
+extension/out/
+extension/bin/
+extension/*.vsix
+dist/

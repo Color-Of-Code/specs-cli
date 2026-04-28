@@ -21,15 +21,15 @@ func TestSanitize(t *testing.T) {
 
 func TestLooksLikeRefName(t *testing.T) {
 	cases := map[string]bool{
-		"":                                         false,
-		"main":                                     true,
-		"release/v1":                               true,
-		"v1.2.3":                                   true,
-		"abc1234":                                  false, // 7 hex
+		"":           false,
+		"main":       true,
+		"release/v1": true,
+		"v1.2.3":     true,
+		"abc1234":    false, // 7 hex
 		"abcdef0123456789abcdef0123456789abcdef01": false, // 40 hex
-		"abcde":                                    true,  // <7
-		"deadbeefXY":                               true,  // not all hex
-		"DEADBEEF":                                 false, // 8 hex
+		"abcde":      true,  // <7
+		"deadbeefXY": true,  // not all hex
+		"DEADBEEF":   false, // 8 hex
 	}
 	for in, want := range cases {
 		if got := looksLikeRefName(in); got != want {
