@@ -1,4 +1,4 @@
-module github.com/jdehaan/specs-cli
+module github.com/jdehaan/specs-cli/cli
 
 go 1.22.2
 

@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/jdehaan/specs-cli/internal/tools"
+	"github.com/jdehaan/specs-cli/cli/internal/tools"
 )
 
 // cmdBootstrap scaffolds a new host with .specs.yaml pointing at the

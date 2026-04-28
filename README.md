@@ -7,7 +7,7 @@ User-scope CLI for the [specs framework](https://github.com/jdehaan/specs-tools)
 One binary per developer, shared across all host projects:
 
 ```bash
-go install github.com/jdehaan/specs-cli/cmd/specs@latest
+go install github.com/jdehaan/specs-cli/cli/cmd/specs@latest
 ```
 
 `go install` puts the binary at `$(go env GOBIN)` if set, otherwise `$(go env GOPATH)/bin` (typically `~/go/bin` on Linux/macOS, `%USERPROFILE%\go\bin` on Windows). Make sure that directory is on `PATH`. Release tarballs from GitHub Releases work too — drop `specs` anywhere on `PATH`.

@@ -28,7 +28,9 @@ bin_dir="$ext_dir/bin"
 src=""
 for candidate in \
   "$repo_root/dist/specs_${goos}_${goarch}/$exe" \
-  "$repo_root/dist/specs_${goos}_${goarch}_v1/$exe"; do
+  "$repo_root/dist/specs_${goos}_${goarch}_v1/$exe" \
+  "$repo_root/cli/dist/specs_${goos}_${goarch}/$exe" \
+  "$repo_root/cli/dist/specs_${goos}_${goarch}_v1/$exe"; do
   if [[ -f "$candidate" ]]; then
     src="$candidate"
     break
@@ -36,7 +38,7 @@ for candidate in \
 done
 if [[ -z "$src" ]]; then
   echo "no GoReleaser binary found for $target; falling back to 'go build'" >&2
-  GOOS="$goos" GOARCH="$goarch" go -C "$repo_root" build -o "$bin_dir/$exe" ./cmd/specs
+  GOOS="$goos" GOARCH="$goarch" go -C "$repo_root/cli" build -o "$bin_dir/$exe" ./cmd/specs
 else
   mkdir -p "$bin_dir"
   cp "$src" "$bin_dir/$exe"

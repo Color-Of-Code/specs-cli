@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jdehaan/specs-cli/internal/config"
+	"github.com/jdehaan/specs-cli/cli/internal/config"
 )
 
 // cmdInit configures an existing host: writes .specs.yaml and (optionally)

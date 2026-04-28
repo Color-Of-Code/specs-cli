@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jdehaan/specs-cli/internal/config"
-	"github.com/jdehaan/specs-cli/internal/tools"
+	"github.com/jdehaan/specs-cli/cli/internal/config"
+	"github.com/jdehaan/specs-cli/cli/internal/tools"
 )
 
 // cmdTools dispatches subcommands managing the .specs-tools content layer.

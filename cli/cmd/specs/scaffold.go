@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/jdehaan/specs-cli/internal/config"
-	"github.com/jdehaan/specs-cli/internal/tools"
+	"github.com/jdehaan/specs-cli/cli/internal/config"
+	"github.com/jdehaan/specs-cli/cli/internal/tools"
 )
 
 // cmdScaffold instantiates one of the canonical templates from .specs-tools

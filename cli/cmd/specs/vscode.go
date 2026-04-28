@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jdehaan/specs-cli/internal/config"
+	"github.com/jdehaan/specs-cli/cli/internal/config"
 )
 
 // cmdVSCode dispatches `specs vscode <subcommand>`.

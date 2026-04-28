@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jdehaan/specs-cli/internal/config"
-	"github.com/jdehaan/specs-cli/internal/visualize"
+	"github.com/jdehaan/specs-cli/cli/internal/config"
+	"github.com/jdehaan/specs-cli/cli/internal/visualize"
 )
 
 // cmdVisualize dispatches `specs visualize <subcommand>`.
