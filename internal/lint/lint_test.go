@@ -54,10 +54,10 @@ func TestSplitTableRow_Indices(t *testing.T) {
 
 func TestStripFragment(t *testing.T) {
 	cases := map[string]string{
-		"a/b.md":          "a/b.md",
-		"a/b.md#section":  "a/b.md",
-		"a/b.md?x=1":      "a/b.md",
-		"a/b.md#s?x":      "a/b.md",
+		"a/b.md":         "a/b.md",
+		"a/b.md#section": "a/b.md",
+		"a/b.md?x=1":     "a/b.md",
+		"a/b.md#s?x":     "a/b.md",
 	}
 	for in, want := range cases {
 		if got := stripFragment(in); got != want {

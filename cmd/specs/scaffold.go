@@ -211,7 +211,7 @@ func replaceFirstH1(s, title string) string {
 func cmdCR(args []string) error {
 	if len(args) == 0 {
 		fmt.Fprintln(os.Stderr, "Usage: specs cr <subcommand>")
-		fmt.Fprintln(os.Stderr, "Subcommands: new, status")
+		fmt.Fprintln(os.Stderr, "Subcommands: new, status, drain")
 		return exitWith(2, "missing subcommand")
 	}
 	switch args[0] {
@@ -219,8 +219,10 @@ func cmdCR(args []string) error {
 		return cmdCRNew(args[1:])
 	case "status":
 		return cmdCRStatus(args[1:])
+	case "drain":
+		return cmdCRDrain(args[1:])
 	case "-h", "--help", "help":
-		fmt.Fprintln(os.Stderr, "Usage: specs cr <new|status> [flags]")
+		fmt.Fprintln(os.Stderr, "Usage: specs cr <new|status|drain> [flags]")
 		return nil
 	default:
 		return exitWith(2, "unknown cr subcommand %q", args[0])
@@ -401,4 +403,3 @@ func truncate(s string, n int) string {
 	}
 	return s[:n-1] + "…"
 }
-

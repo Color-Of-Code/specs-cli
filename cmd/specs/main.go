@@ -27,7 +27,8 @@ func init() {
 		{"lint", "run lint checks (--all|--links|--style|--baselines)", cmdLint},
 		{"tools", "manage the .specs-tools content layer (update)", cmdTools},
 		{"scaffold", "instantiate a template (requirement|feature|component|api|service)", cmdScaffold},
-		{"cr", "change-request operations (new, status)", cmdCR},
+		{"cr", "change-request operations (new, status, drain)", cmdCR},
+		{"baseline", "verify or update component baselines (check, update)", cmdBaseline},
 	}
 }
 

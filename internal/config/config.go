@@ -19,9 +19,9 @@ const FileName = ".specs.yaml"
 type SpecsMode string
 
 const (
-	SpecsModeRepoRoot  SpecsMode = "repo-root"  // specs root == git repo root
-	SpecsModeFolder    SpecsMode = "folder"     // plain subdirectory of host repo
-	SpecsModeSubmodule SpecsMode = "submodule"  // git submodule of host repo
+	SpecsModeRepoRoot   SpecsMode = "repo-root"  // specs root == git repo root
+	SpecsModeFolder     SpecsMode = "folder"     // plain subdirectory of host repo
+	SpecsModeSubmodule  SpecsMode = "submodule"  // git submodule of host repo
 	SpecsModeStandalone SpecsMode = "standalone" // not in a git repo
 )
 
@@ -29,7 +29,7 @@ const (
 type ToolsMode string
 
 const (
-	ToolsModeManaged   ToolsMode = "managed"   // CLI-managed read-only checkout in the user cache dir
+	ToolsModeManaged   ToolsMode = "managed" // CLI-managed read-only checkout in the user cache dir
 	ToolsModeSubmodule ToolsMode = "submodule"
 	ToolsModeFolder    ToolsMode = "folder" // plain folder; may or may not be a git working tree
 	ToolsModeVendor    ToolsMode = "vendor" // vendored snapshot (no .git)
