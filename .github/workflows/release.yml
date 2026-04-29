@@ -72,7 +72,7 @@ jobs:
           name: goreleaser-dist
           path: dist/
       - name: Build .vsix for ${{ matrix.target }}
-        run: bash scripts/build-extension.sh ${{ matrix.target }}
+        run: pnpm run package:extension -- ${{ matrix.target }}
         env:
           SPECS_VERSION: ${{ needs.release.outputs.version }}
       - name: Attach .vsix to release

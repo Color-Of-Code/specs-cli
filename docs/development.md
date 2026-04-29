@@ -62,7 +62,7 @@ The `markdown` job in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) 
 
 ## Releases
 
-Cross-platform release builds are produced by GoReleaser on git tags (`v*.*.*`). See [`cli/.goreleaser.yaml`](../cli/.goreleaser.yaml). Per-platform `.vsix` artifacts are attached to GitHub releases via [`scripts/build-extension.sh`](../scripts/build-extension.sh), which stages the matching CLI binary into the extension before packaging.
+Cross-platform release builds are produced by GoReleaser on git tags (`v*.*.*`). See [`cli/.goreleaser.yaml`](../cli/.goreleaser.yaml). Per-platform `.vsix` artifacts are attached to GitHub releases via `pnpm run package:extension -- <target>`, which stages the matching CLI binary into the extension before packaging.
 
 ## Status
 
@@ -84,17 +84,17 @@ Use `pnpm run ...` for repo scripts.
 
 ## Developing the VS Code Extension Locally
 
-To incrementally test the VS Code extension without reinstalling it on every iteration, you can use the provided `deploy-dev.sh` script. This script sets up a symlink for live development, allowing changes to be picked up immediately after reloading the VS Code window.
+To incrementally test the VS Code extension without reinstalling it on every iteration, use `pnpm run deploy-dev`. That command sets up a symlink for live development, allowing changes to be picked up immediately after reloading the VS Code window.
 
 ### Steps
 
-1. **Run the Deployment Script**
+1. **Run the Deployment Command**
 
    ```bash
-   ./scripts/deploy-dev.sh
+   pnpm run deploy-dev
    ```
 
-   This script will:
+   This command will:
    - Remove any previously installed `.vsix`-based extension (with confirmation).
    - Build the `specs` CLI binary into `extension/bin/`.
    - Compile the TypeScript extension source.

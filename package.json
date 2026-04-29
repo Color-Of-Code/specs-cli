@@ -13,6 +13,7 @@
     "build": "pnpm run build:cli && pnpm run build:extension",
     "build:cli": "cd cli/cmd/specs && go build -o ../../../specs",
     "build:extension": "pnpm --filter ./extension run compile",
+    "package:extension": "node --experimental-strip-types ./extension/scripts/build-extension.ts",
     "deploy-dev": "pnpm --filter extension run deploy-dev"
   },
   "devDependencies": {
