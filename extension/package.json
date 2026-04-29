@@ -46,6 +46,8 @@
       { "command": "specs.baseline.update", "title": "Baseline: Update", "category": "Specs" },
       { "command": "specs.cr.refresh", "title": "Refresh CR list", "category": "Specs", "icon": "$(refresh)" },
       { "command": "specs.cr.openDir", "title": "Reveal CR folder", "category": "Specs" },
+      { "command": "specs.requirements.refresh", "title": "Refresh requirements", "category": "Specs", "icon": "$(refresh)" },
+      { "command": "specs.features.refresh", "title": "Refresh features", "category": "Specs", "icon": "$(refresh)" },
       { "command": "specs.visualize.preview", "title": "Visualize: Open preview", "category": "Specs" },
       { "command": "specs.visualize.refresh", "title": "Visualize: Refresh preview", "category": "Specs" }
     ],
@@ -54,6 +56,16 @@
         {
           "id": "specs.changeRequests",
           "name": "Change Requests",
+          "contextualTitle": "Specs"
+        },
+        {
+          "id": "specs.requirements",
+          "name": "Requirements",
+          "contextualTitle": "Specs"
+        },
+        {
+          "id": "specs.features",
+          "name": "Features",
           "contextualTitle": "Specs"
         }
       ]
@@ -72,6 +84,16 @@
         {
           "command": "specs.cr.refresh",
           "when": "view == specs.changeRequests",
+          "group": "navigation"
+        },
+        {
+          "command": "specs.requirements.refresh",
+          "when": "view == specs.requirements",
+          "group": "navigation"
+        },
+        {
+          "command": "specs.features.refresh",
+          "when": "view == specs.features",
           "group": "navigation"
         }
       ],
