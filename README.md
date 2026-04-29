@@ -1,13 +1,13 @@
 # specs-cli
 
-User-scope CLI for the [specs framework](https://github.com/jdehaan/specs-tools). A single cross-platform Go binary that handles lint, scaffolding, change-request lifecycle, traceability links, and baseline updates for any host project that uses the framework.
+User-scope CLI for the [specs framework](https://github.com/Color-Of-Code/specs-tools). A single cross-platform Go binary that handles lint, scaffolding, change-request lifecycle, traceability links, and baseline updates for any host project that uses the framework.
 
 ## Install
 
 One binary per developer, shared across all host projects:
 
 ```bash
-go install github.com/jdehaan/specs-cli/cli/cmd/specs@latest
+go install github.com/Color-Of-Code/specs-cli/cli/cmd/specs@latest
 ```
 
 `go install` puts the binary at `$(go env GOBIN)` if set, otherwise `$(go env GOPATH)/bin` (typically `~/go/bin` on Linux/macOS, `%USERPROFILE%\go\bin` on Windows). Make sure that directory is on `PATH`. Release tarballs from GitHub Releases work too — drop `specs` anywhere on `PATH`.
@@ -90,7 +90,7 @@ All write commands accept `--dry-run` where applicable.
 Lives next to the specs root. Minimal example for **managed** mode (recommended default):
 
 ```yaml
-tools_url: https://github.com/jdehaan/specs-tools.git
+tools_url: https://github.com/Color-Of-Code/specs-tools.git
 tools_ref: v1.0.0          # tag, branch, or commit SHA
 min_specs_version: 0.1.0
 repos:

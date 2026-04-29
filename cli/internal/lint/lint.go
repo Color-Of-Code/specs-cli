@@ -13,7 +13,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/jdehaan/specs-cli/cli/internal/config"
+	"github.com/Color-Of-Code/specs-cli/cli/internal/config"
 )
 
 // Result aggregates findings from a lint run.

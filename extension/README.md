@@ -1,13 +1,13 @@
 # Specs (VS Code extension)
 
-VS Code support for the [specs-cli](https://github.com/jdehaan/specs-cli)
+VS Code support for the [specs-cli](https://github.com/Color-Of-Code/specs-cli)
 framework. The extension bundles a matching `specs` binary; once
 installed, every Specs command is reachable from the palette without
 any separate CLI installation.
 
-This package is part of the [specs-cli](https://github.com/jdehaan/specs-cli)
+This package is part of the [specs-cli](https://github.com/Color-Of-Code/specs-cli)
 monorepo. Releases ship a per-platform `.vsix` attached to each
-[GitHub release](https://github.com/jdehaan/specs-cli/releases).
+[GitHub release](https://github.com/Color-Of-Code/specs-cli/releases).
 
 ## Install
 

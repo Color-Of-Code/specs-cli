@@ -1,4 +1,4 @@
-module github.com/jdehaan/specs-cli/cli
+module github.com/Color-Of-Code/specs-cli/cli
 
 go 1.26.2
 

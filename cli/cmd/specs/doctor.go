@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/jdehaan/specs-cli/cli/internal/config"
-	"github.com/jdehaan/specs-cli/cli/internal/toolsmanifest"
+	"github.com/Color-Of-Code/specs-cli/cli/internal/config"
+	"github.com/Color-Of-Code/specs-cli/cli/internal/toolsmanifest"
 )
 
 // doctorJSON is the stable schema consumed by the VS Code extension and

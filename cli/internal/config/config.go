@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jdehaan/specs-cli/cli/internal/tools"
+	"github.com/Color-Of-Code/specs-cli/cli/internal/tools"
 	"gopkg.in/yaml.v3"
 )
 

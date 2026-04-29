@@ -14,7 +14,7 @@ interface BootstrapAnswers {
     withVscode: boolean;
 }
 
-const DEFAULT_TOOLS_URL = "https://github.com/jdehaan/specs-tools.git";
+const DEFAULT_TOOLS_URL = "https://github.com/Color-Of-Code/specs-tools.git";
 
 export async function runBootstrapWizard(
     context: vscode.ExtensionContext

@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/jdehaan/specs-cli/cli/internal/tools"
+	"github.com/Color-Of-Code/specs-cli/cli/internal/tools"
 )
 
 // cmdBootstrap scaffolds a new host with .specs.yaml pointing at the
@@ -30,7 +30,7 @@ func cmdBootstrap(args []string) error {
 	specsURL := fs.String("specs-url", "", "git URL of the host's specs repo (required for --layout submodule)")
 	specsRef := fs.String("specs-ref", "", "branch/tag for --layout submodule (optional)")
 	toolsMode := fs.String("tools-mode", "managed", "how .specs-tools is materialised: managed|submodule|folder|vendor")
-	toolsURL := fs.String("tools-url", "https://github.com/jdehaan/specs-tools.git", "git URL of specs-tools content repo")
+	toolsURL := fs.String("tools-url", "https://github.com/Color-Of-Code/specs-tools.git", "git URL of specs-tools content repo")
 	toolsRef := fs.String("tools-ref", "main", "tag/branch/commit for content")
 	withModel := fs.Bool("with-model", false, "create empty model/ and change-requests/ skeletons")
 	withVSCode := fs.Bool("with-vscode", false, "write .vscode/tasks.json")
