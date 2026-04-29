@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Color-Of-Code/specs-cli/cli/internal/config"
-	"github.com/Color-Of-Code/specs-cli/cli/internal/linkcheck"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/config"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/linkcheck"
 )
 
 // cmdLink dispatches `specs link <subcommand>`.

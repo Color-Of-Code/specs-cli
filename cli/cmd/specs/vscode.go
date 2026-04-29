@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Color-Of-Code/specs-cli/cli/internal/config"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/config"
 )
 
 // cmdVSCode dispatches `specs vscode <subcommand>`.

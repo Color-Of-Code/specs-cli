@@ -7,13 +7,13 @@ import (
 )
 
 // TestLoad_PlainFolderLayout creates a fake host repo where specs/ is a
-// plain folder (layout B1) with .specs-tools as a plain subfolder, and
+// plain folder (layout B1) with .specs-framework as a plain subfolder, and
 // verifies that Load resolves correctly without a .specs.yaml.
 func TestLoad_PlainFolderLayout(t *testing.T) {
 	dir := t.TempDir()
 	host := filepath.Join(dir, "host")
 	specs := filepath.Join(host, "specs")
-	tools := filepath.Join(specs, ".specs-tools")
+	tools := filepath.Join(specs, ".specs-framework")
 	for _, p := range []string{
 		filepath.Join(specs, "model"),
 		filepath.Join(specs, "change-requests"),

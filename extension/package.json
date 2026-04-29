@@ -1,13 +1,13 @@
 {
   "name": "specs",
   "displayName": "Specs",
-  "description": "VS Code support for the specs-cli framework: lint, change-requests, traceability visualisation.",
-  "version": "0.4.0",
-  "publisher": "jdehaan",
-  "license": "MIT",
+  "description": "VS Code support for the specs toolchain: lint, change-requests, traceability visualisation.",
+  "version": "0.1.0",
+  "publisher": "Color-Of-Code",
+  "license": "GPL-3.0-only",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Color-Of-Code/specs-cli.git",
+    "url": "https://github.com/Color-Of-Code/specs-toolchain.git",
     "directory": "extension"
   },
   "engines": {
@@ -24,8 +24,6 @@
   ],
   "main": "./out/extension.js",
   "activationEvents": [
-    "onCommand:specs.bootstrap",
-    "onView:specs.changeRequests",
     "workspaceContains:.specs.yaml",
     "workspaceContains:specs/.specs.yaml"
   ],
@@ -240,12 +238,14 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "pnpm run compile",
     "compile": "tsc -p .",
     "watch": "tsc -p . --watch",
     "lint": "tsc -p . --noEmit",
     "fetch-mermaid": "node -e \"require('https').get('https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js',r=>r.pipe(require('fs').createWriteStream('media/mermaid.min.js')))\"",
-    "package": "vsce package --no-dependencies"
+    "package": "vsce package --no-dependencies",
+    "deploy-dev": "pnpm run build:cli && pnpm run compile && pnpm run symlink",
+    "symlink": "node ./scripts/create-symlink.mjs"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

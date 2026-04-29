@@ -6,7 +6,7 @@ There are two supported ways to use the framework. They share the same `specs` b
 
 The extension bundles a matching `specs` binary, so installing it is the only step needed. Every command is reachable from the Command Palette and from the Specs view, and the extension auto-detects the specs root in the open workspace.
 
-1. Download `specs-<your-platform>.vsix` from the latest [GitHub release](https://github.com/Color-Of-Code/specs-cli/releases).
+1. Download `specs-<your-platform>.vsix` from the latest [GitHub release](https://github.com/Color-Of-Code/specs-toolchain/releases).
 2. Install it:
 
    ```bash
@@ -22,10 +22,10 @@ The extension never requires a separately installed CLI. If you happen to have o
 Use this if you do not work in VS Code, automate things in CI, or prefer a terminal-only workflow.
 
 ```bash
-go install github.com/Color-Of-Code/specs-cli/cli/cmd/specs@latest
+go install github.com/Color-Of-Code/specs-toolchain/cli/cmd/specs@latest
 ```
 
-`go install` puts the binary at `$(go env GOBIN)` if set, otherwise `$(go env GOPATH)/bin` (typically `~/go/bin` on Linux/macOS, `%USERPROFILE%\go\bin` on Windows). Make sure that directory is on `PATH`. Release tarballs from [GitHub Releases](https://github.com/Color-Of-Code/specs-cli/releases) work too — drop the `specs` binary anywhere on `PATH`.
+`go install` puts the binary at `$(go env GOBIN)` if set, otherwise `$(go env GOPATH)/bin` (typically `~/go/bin` on Linux/macOS, `%USERPROFILE%\go\bin` on Windows). Make sure that directory is on `PATH`. Release tarballs from [GitHub Releases](https://github.com/Color-Of-Code/specs-toolchain/releases) work too — drop the `specs` binary anywhere on `PATH`.
 
 Verify the install:
 

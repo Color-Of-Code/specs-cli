@@ -14,7 +14,7 @@ interface BootstrapAnswers {
   withVscode: boolean;
 }
 
-const DEFAULT_TOOLS_URL = "https://github.com/Color-Of-Code/specs-tools.git";
+const DEFAULT_TOOLS_URL = "https://github.com/Color-Of-Code/specs-framework.git";
 
 export async function runBootstrapWizard(context: vscode.ExtensionContext): Promise<void> {
   const folder = pickFolder();
@@ -195,12 +195,12 @@ async function pickToolsMode(): Promise<BootstrapAnswers["toolsMode"] | undefine
       label: "managed",
       description: "fetch into the user cache, share across projects (recommended)",
     },
-    { label: "submodule", description: "add .specs-tools as a submodule of the host repo" },
-    { label: "folder", description: "clone .specs-tools next to the specs root" },
-    { label: "vendor", description: "snapshot .specs-tools without git history" },
+    { label: "submodule", description: "add .specs-framework as a submodule of the host repo" },
+    { label: "folder", description: "clone .specs-framework next to the specs root" },
+    { label: "vendor", description: "snapshot .specs-framework without git history" },
   ];
   const pick = await vscode.window.showQuickPick(items, {
-    placeHolder: "How should .specs-tools be materialised?",
+    placeHolder: "How should .specs-framework be materialised?",
     ignoreFocusOut: true,
   });
   if (!pick) {

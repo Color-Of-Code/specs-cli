@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/Color-Of-Code/specs-cli/cli/internal/tools"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/tools"
 )
 
 // cmdBootstrap scaffolds a new host with .specs.yaml pointing at the
@@ -20,17 +20,17 @@ import (
 //	                       requires --specs-url
 //
 //	--tools-mode managed   (default) fetch into the user cache, hide it
-//	--tools-mode submodule add .specs-tools as a submodule of the host
-//	--tools-mode folder    clone .specs-tools next to specs root
-//	--tools-mode vendor    snapshot .specs-tools (no .git)
+//	--tools-mode submodule add .specs-framework as a submodule of the host
+//	--tools-mode folder    clone .specs-framework next to specs root
+//	--tools-mode vendor    snapshot .specs-framework (no .git)
 func cmdBootstrap(args []string) error {
 	fs := flag.NewFlagSet("bootstrap", flag.ContinueOnError)
 	at := fs.String("at", "", "path to the specs root (created if missing); use '.' for repo root")
 	layout := fs.String("layout", "folder", "how specs/ is materialised: submodule|folder")
 	specsURL := fs.String("specs-url", "", "git URL of the host's specs repo (required for --layout submodule)")
 	specsRef := fs.String("specs-ref", "", "branch/tag for --layout submodule (optional)")
-	toolsMode := fs.String("tools-mode", "managed", "how .specs-tools is materialised: managed|submodule|folder|vendor")
-	toolsURL := fs.String("tools-url", "https://github.com/Color-Of-Code/specs-tools.git", "git URL of specs-tools content repo")
+	toolsMode := fs.String("tools-mode", "managed", "how .specs-framework is materialised: managed|submodule|folder|vendor")
+	toolsURL := fs.String("tools-url", "https://github.com/Color-Of-Code/specs-framework.git", "git URL of specs-framework content repo")
 	toolsRef := fs.String("tools-ref", "main", "tag/branch/commit for content")
 	withModel := fs.Bool("with-model", false, "create empty model/ and change-requests/ skeletons")
 	withVSCode := fs.Bool("with-vscode", false, "write .vscode/tasks.json")
@@ -99,8 +99,8 @@ func cmdBootstrap(args []string) error {
 		return exitWith(2, "unknown --layout %q", *layout)
 	}
 
-	// Materialise .specs-tools content.
-	toolsDir := filepath.Join(specsRoot, ".specs-tools")
+	// Materialise .specs-framework content.
+	toolsDir := filepath.Join(specsRoot, ".specs-framework")
 	switch *toolsMode {
 	case "managed":
 		if *dryRun {

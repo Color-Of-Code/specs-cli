@@ -1,2 +1,5 @@
 packages:
   - extension
+
+useNodeVersion: 24.15.0
+minimumReleaseAge: 10080

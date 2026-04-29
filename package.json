@@ -1,6 +1,7 @@
 {
-  "name": "specs-cli-devtools",
+  "name": "specs-toolchain-devtools",
   "private": true,
+  "packageManager": "pnpm@10.33.2",
   "description": "Repo-level dev tooling for markdown lint/format. Not published.",
   "scripts": {
     "md:lint": "markdownlint-cli2 docs/*.md",
@@ -11,7 +12,8 @@
     "format:check": "prettier --check 'docs/*.md'",
     "build": "pnpm run build:cli && pnpm run build:extension",
     "build:cli": "cd cli/cmd/specs && go build -o ../../../specs",
-    "build:extension": "pnpm --filter ./extension run compile"
+    "build:extension": "pnpm --filter ./extension run compile",
+    "deploy-dev": "pnpm --filter extension run deploy-dev"
   },
   "devDependencies": {
     "markdownlint-cli2": "^0.14.0",

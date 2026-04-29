@@ -10,8 +10,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/Color-Of-Code/specs-cli/cli/internal/config"
-	"github.com/Color-Of-Code/specs-cli/cli/internal/lint"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/config"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/lint"
 )
 
 // cmdBaseline dispatches `specs baseline <subcommand>`.

@@ -1,5 +1,5 @@
-// Package tools manages the read-only managed-mode cache of .specs-tools
-// content under the user's cache dir (os.UserCacheDir() + /specs-cli/tools/<ref>/).
+// Package tools manages the read-only managed-mode cache of framework
+// content under the user's cache dir (os.UserCacheDir() + /specs-toolchain/tools/<ref>/).
 //
 // The cache is keyed by tools_ref so multiple refs can coexist and several
 // host projects on the same machine share a single checkout per ref.
@@ -17,15 +17,15 @@ import (
 
 // CacheRoot returns the base directory for managed tool checkouts.
 //
-//	Linux:   ${XDG_CACHE_HOME:-~/.cache}/specs-cli/tools
-//	macOS:   ~/Library/Caches/specs-cli/tools
-//	Windows: %LocalAppData%\specs-cli\tools
+//	Linux:   ${XDG_CACHE_HOME:-~/.cache}/specs-toolchain/tools
+//	macOS:   ~/Library/Caches/specs-toolchain/tools
+//	Windows: %LocalAppData%\specs-toolchain\tools
 func CacheRoot() (string, error) {
 	base, err := os.UserCacheDir()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(base, "specs-cli", "tools"), nil
+	return filepath.Join(base, "specs-toolchain", "tools"), nil
 }
 
 // ManagedPath returns the cache path for a given ref. The ref is sanitised

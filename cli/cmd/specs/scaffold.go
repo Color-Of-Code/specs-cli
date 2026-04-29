@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Color-Of-Code/specs-cli/cli/internal/config"
-	"github.com/Color-Of-Code/specs-cli/cli/internal/tools"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/config"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/tools"
 )
 
-// cmdScaffold instantiates one of the canonical templates from .specs-tools
+// cmdScaffold instantiates one of the canonical templates from .specs-framework
 // into either the model tree or a CR-local working tree.
 //
 // Usage:

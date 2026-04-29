@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Color-Of-Code/specs-cli/cli/internal/config"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/config"
 )
 
 // cmdInit configures an existing host: writes .specs.yaml and (optionally)

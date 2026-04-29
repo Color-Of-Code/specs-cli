@@ -1,4 +1,4 @@
-// Package lint ports the .specs-tools/lint/lint.sh checks to Go. It exposes
+// Package lint ports the framework lint checks to Go. It exposes
 // modular check functions and a Result type so callers can compose modes
 // (--all, --links, --style, --baselines).
 package lint
@@ -13,7 +13,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/Color-Of-Code/specs-cli/cli/internal/config"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/config"
 )
 
 // Result aggregates findings from a lint run.
@@ -35,6 +35,7 @@ func (r *Result) warnf(format string, a ...any) {
 // Excluded paths (relative to specs root) that mirror the bash lint script
 // and the markdownlint config ignore list.
 var excludedPathPrefixes = []string{
+	".specs-framework" + string(os.PathSeparator),
 	".specs-tools" + string(os.PathSeparator),
 	".lint" + string(os.PathSeparator),
 	"node_modules" + string(os.PathSeparator),
@@ -199,8 +200,9 @@ func stripFragment(s string) string {
 	return s
 }
 
-// CheckMarkdownStyle shells out to markdownlint-cli2 (preferred) or npx
-// markdownlint-cli2. It is a no-op (warning only) if neither is available.
+// CheckMarkdownStyle shells out to markdownlint-cli2 (preferred), then
+// pnpm dlx, then npx as a legacy fallback. It is a no-op (warning only) if
+// none are available.
 func CheckMarkdownStyle(out io.Writer, specsRoot, configPath string, r *Result) {
 	fmt.Fprintln(out, "== markdownlint ==")
 	if configPath == "" {
@@ -214,12 +216,15 @@ func CheckMarkdownStyle(out io.Writer, specsRoot, configPath string, r *Result) 
 	var cmd *exec.Cmd
 	if path, err := exec.LookPath("markdownlint-cli2"); err == nil {
 		cmd = exec.Command(path, "--config", configPath, "**/*.md")
+	} else if path, err := exec.LookPath("pnpm"); err == nil {
+		fmt.Fprintln(out, "using pnpm dlx markdownlint-cli2")
+		cmd = exec.Command(path, "dlx", "markdownlint-cli2", "--config", configPath, "**/*.md")
 	} else if path, err := exec.LookPath("npx"); err == nil {
-		fmt.Fprintln(out, "using npx markdownlint-cli2 (first run downloads the package)")
+		fmt.Fprintln(out, "using npx markdownlint-cli2 (legacy fallback)")
 		cmd = exec.Command(path, "--yes", "markdownlint-cli2", "--config", configPath, "**/*.md")
 	} else {
-		r.warnf("markdownlint-cli2 and npx not available; skipping style check")
-		r.warnf("install with: npm i -g markdownlint-cli2  (or install Node.js for npx)")
+		r.warnf("markdownlint-cli2, pnpm, and npx not available; skipping style check")
+		r.warnf("install with: pnpm add -D markdownlint-cli2  (or make pnpm available for pnpm dlx)")
 		return
 	}
 	cmd.Dir = specsRoot

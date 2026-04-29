@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/Color-Of-Code/specs-cli/cli/internal/config"
-	"github.com/Color-Of-Code/specs-cli/cli/internal/toolsmanifest"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/config"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/toolsmanifest"
 )
 
 // doctorJSON is the stable schema consumed by the VS Code extension and
@@ -121,7 +121,7 @@ func cmdDoctor(args []string) error {
 	fmt.Println("External tools:")
 	reportTool("git", true)
 	reportTool("markdownlint-cli2", false)
-	reportTool("npx", false)
+	reportTool("pnpm", false)
 	reportTool("dot", false)
 
 	if cfg.MinSpecsVersion != "" && Version != "dev" && Version < cfg.MinSpecsVersion {

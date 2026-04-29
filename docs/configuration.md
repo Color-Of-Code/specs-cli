@@ -5,7 +5,7 @@ Lives next to the specs root.
 ## Managed mode (recommended default)
 
 ```yaml
-tools_url: https://github.com/Color-Of-Code/specs-tools.git
+tools_url: https://github.com/Color-Of-Code/specs-framework.git
 tools_ref: v1.0.0 # tag, branch, or commit SHA
 min_specs_version: 0.1.0
 repos:
@@ -18,7 +18,7 @@ repos:
 Drop `tools_url` / `tools_ref` and point at a checkout instead:
 
 ```yaml
-tools_dir: ../specs-tools # or .specs-tools (submodule/folder), or absolute path
+tools_dir: ../specs-framework # or .specs-framework (submodule/folder), or absolute path
 min_specs_version: 0.1.0
 repos: ...
 ```

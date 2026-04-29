@@ -8,12 +8,17 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Color-Of-Code/specs-cli/cli/internal/tools"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/tools"
 	"gopkg.in/yaml.v3"
 )
 
 // FileName is the canonical name of the host-side config file.
 const FileName = ".specs.yaml"
+
+const (
+	defaultToolsDirName = ".specs-framework"
+	legacyToolsDirName  = ".specs-tools"
+)
 
 // SpecsMode describes how the specs root is materialised in the host.
 type SpecsMode string
@@ -25,7 +30,7 @@ const (
 	SpecsModeStandalone SpecsMode = "standalone" // not in a git repo
 )
 
-// ToolsMode describes how the .specs-tools content is materialised.
+// ToolsMode describes how the framework content is materialised.
 type ToolsMode string
 
 const (
@@ -268,16 +273,21 @@ func isSubmodule(hostRoot, child string) bool {
 
 // resolveToolsDir resolves the tools_dir setting to an absolute path and
 // detects the content mode. Recognised values for raw:
-//   - "auto": try <specsRoot>/.specs-tools, then <hostRoot>/.specs-tools.
+//   - "auto": try <specsRoot>/.specs-framework, then <specsRoot>/.specs-tools,
+//     then the same two names under <hostRoot>.
 //   - absolute or relative path: anchored to specsRoot.
 func resolveToolsDir(raw, specsRoot, hostRoot string) (string, ToolsMode) {
 	candidates := []string{}
 	if raw == "" || raw == "auto" {
 		candidates = append(candidates,
-			filepath.Join(specsRoot, ".specs-tools"),
+			filepath.Join(specsRoot, defaultToolsDirName),
+			filepath.Join(specsRoot, legacyToolsDirName),
 		)
 		if hostRoot != "" && hostRoot != specsRoot {
-			candidates = append(candidates, filepath.Join(hostRoot, ".specs-tools"))
+			candidates = append(candidates,
+				filepath.Join(hostRoot, defaultToolsDirName),
+				filepath.Join(hostRoot, legacyToolsDirName),
+			)
 		}
 	} else {
 		candidates = append(candidates, absRelTo(specsRoot, raw))

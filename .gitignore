@@ -1,9 +1,5 @@
-/cli/specs
 node_modules/
 extension/node_modules/
 extension/out/
 extension/bin/
 extension/*.vsix
-dist/
-cli/dist/
-specs

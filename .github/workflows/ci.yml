@@ -26,30 +26,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.2
+          run_install: false
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: npm
-          cache-dependency-path: extension/package-lock.json
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
       - name: Install
-        run: npm ci
-        working-directory: extension
+        run: pnpm install --frozen-lockfile
       - name: Type-check & compile
-        run: npm run compile
-        working-directory: extension
+        run: pnpm --filter ./extension run compile
 
   markdown:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.2
+          run_install: false
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: npm
-          cache-dependency-path: package-lock.json
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
       - name: Install
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Prettier (check)
-        run: npm run format:check
+        run: pnpm run format:check
       - name: markdownlint
-        run: npm run md:lint
+        run: pnpm run md:lint

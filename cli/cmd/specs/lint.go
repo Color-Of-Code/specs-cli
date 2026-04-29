@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Color-Of-Code/specs-cli/cli/internal/config"
-	"github.com/Color-Of-Code/specs-cli/cli/internal/lint"
-	"github.com/Color-Of-Code/specs-cli/cli/internal/tools"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/config"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/lint"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/tools"
 )
 
 func cmdLint(args []string) error {
 	fs := flag.NewFlagSet("lint", flag.ContinueOnError)
 	all := fs.Bool("all", false, "run every check (default)")
 	links := fs.Bool("links", false, "check broken symlinks and markdown link targets")
-	style := fs.Bool("style", false, "run markdownlint-cli2 (or npx)")
+	style := fs.Bool("style", false, "run markdownlint-cli2 (or pnpm dlx)")
 	baselines := fs.Bool("baselines", false, "verify component baseline SHAs")
 	fs.Usage = func() {
 		fmt.Fprintln(os.Stderr, "Usage: specs lint [--all|--links|--style|--baselines]")

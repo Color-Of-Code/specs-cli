@@ -6,11 +6,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Color-Of-Code/specs-cli/cli/internal/config"
-	"github.com/Color-Of-Code/specs-cli/cli/internal/tools"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/config"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/tools"
 )
 
-// cmdTools dispatches subcommands managing the .specs-tools content layer.
+// cmdTools dispatches subcommands managing the .specs-framework content layer.
 func cmdTools(args []string) error {
 	if len(args) == 0 {
 		fmt.Fprintln(os.Stderr, "Usage: specs tools <subcommand>")

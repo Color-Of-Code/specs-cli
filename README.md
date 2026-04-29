@@ -1,6 +1,6 @@
-# specs-cli
+# specs-toolchain
 
-Tooling for the [specs framework](https://github.com/Color-Of-Code/specs-tools): lint, scaffolding, change-request lifecycle, traceability links, and baseline updates for any host project that uses the framework.
+Tooling for the [specs framework](https://github.com/Color-Of-Code/specs-framework): lint, scaffolding, change-request lifecycle, traceability links, and baseline updates for any host project that uses the framework.
 
 It ships in two flavours that share the same engine:
 
@@ -11,7 +11,7 @@ You can use either one alone, or install both side by side.
 
 ## Quick start — VS Code extension
 
-1. Download `specs-<your-platform>.vsix` from the latest [GitHub release](https://github.com/Color-Of-Code/specs-cli/releases).
+1. Download `specs-<your-platform>.vsix` from the latest [GitHub release](https://github.com/Color-Of-Code/specs-toolchain/releases).
 2. Install it:
 
    ```bash
@@ -25,12 +25,12 @@ The extension uses its bundled binary by default, so no separate CLI install is 
 ## Quick start — CLI only
 
 ```bash
-go install github.com/Color-Of-Code/specs-cli/cli/cmd/specs@latest
+go install github.com/Color-Of-Code/specs-toolchain/cli/cmd/specs@latest
 specs --version
 specs doctor
 ```
 
-Release tarballs from [GitHub Releases](https://github.com/Color-Of-Code/specs-cli/releases) work too — drop the `specs` binary anywhere on `PATH`.
+Release tarballs from [GitHub Releases](https://github.com/Color-Of-Code/specs-toolchain/releases) work too — drop the `specs` binary anywhere on `PATH`.
 
 Full installation notes (extension settings, combining both, platform paths) live in [docs/install.md](docs/install.md).
 
