@@ -5,7 +5,7 @@
 Three paths matter and are referenced throughout the documentation and in `specs doctor`:
 
 - **specs root** — the directory that contains `.specs.yaml`, `model/`, and `change-requests/`. This is what `specs` operates on.
-- **host root** — the git repository that contains the specs root. It can _be_ the specs root (when the repo is dedicated to specs) or contain it as a subdirectory or submodule.
+- **host repo** — the git repository that contains the specs root. It can _be_ the specs root (when the repo is dedicated to specs) or contain it as a subdirectory or submodule.
 - **tools dir** — where the generic framework content (`templates/`, `process/`, `skills/`, `agents/`, lint config — collectively `.specs-tools`) is materialised. In **managed** mode this is the user cache dir; in **dev** mode it is whatever `tools_dir` points at.
 
 `specs doctor` prints all three so you can verify what was detected.
