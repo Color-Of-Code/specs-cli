@@ -1,4 +1,4 @@
-// Phase E3 — Change-Requests tree view.
+// Change-Requests tree view.
 import * as path from "path";
 import * as fs from "fs";
 import * as vscode from "vscode";

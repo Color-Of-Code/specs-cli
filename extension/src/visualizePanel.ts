@@ -1,4 +1,4 @@
-// Phase E5 — Visualize webview rendering the traceability graph as
+// Visualize webview rendering the traceability graph as
 // Mermaid via the bundled mermaid.min.js.
 import * as path from "path";
 import * as fs from "fs";

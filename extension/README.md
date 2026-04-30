@@ -25,8 +25,3 @@ monorepo. Releases ship a per-platform `.vsix` attached to each
 | `specs.useGlobalBinary` | `false` | Prefer `specs` on `PATH` over the bundled binary.             |
 | `specs.enginePath`      | `""`    | Explicit path to a specs engine binary. Overrides bundled and PATH. |
 | `specs.toolsAutoUpdate` | `false` | Run `specs tools update` on activation.                       |
-
-## Status
-
-The extension ships in phases. See the root [README](../README.md) and
-the changelog for the current command surface.

@@ -82,14 +82,6 @@ pnpm run package:bundled -- <target>
 
 `make package-extension` runs the same script for the host platform.
 
-## Status
-
-Phase 1 — lint, layout auto-detection, `init` / `bootstrap` / `tools update`, **managed mode** (cache + auto-fetch).
-**Phase 2** — `scaffold`, `cr {new,status,drain}`, `baseline update`, `link check`, `vscode init` shipped.
-**Phase 3** — `visualize traceability` (DOT and Mermaid), `templates_schema` enforcement, `--layout submodule` shipped.
-**Phase 4** — framework registry (`specs framework list/add/remove`, `--framework <name>` on `init`/`bootstrap`).
-**VS Code extension** under `extension/` (see [extension/README.md](../extension/README.md)).
-
 ## Developing the VS Code Extension Locally
 
 To incrementally test the extension without reinstalling on every iteration, use `make deploy-dev`. It builds and symlinks the extension folder into `~/.vscode/extensions`, so changes are picked up on the next window reload.
@@ -114,5 +106,3 @@ To incrementally test the extension without reinstalling on every iteration, use
 3. **Iterate**
 
    Re-run `make build-extension` (or `cd extension && pnpm run watch` for live recompilation) and reload the window to pick up further edits.
-
-If you previously installed a `.vsix` of this extension, uninstall it first so the symlinked one takes precedence.

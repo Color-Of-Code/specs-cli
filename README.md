@@ -42,5 +42,5 @@ Full installation notes (extension settings, combining both, platform paths) liv
 | [Concepts](docs/concepts.md)           | specs root vs. host repo vs. tools dir; `managed` vs. `dev` mode for framework content. |
 | [Commands](docs/commands.md)           | Reference for every `specs` subcommand (also reachable as **Specs: …** in VS Code).     |
 | [Configuration](docs/configuration.md) | `.specs.yaml` keys, defaults, and overrides.                                            |
-| [Development](docs/development.md)     | Building the engine and extension, release process, current phase status.               |
+| [Development](docs/development.md)     | Building the engine and extension, release process.                                     |
 | [Extension](extension/README.md)       | VS Code-specific settings, packaging notes, platform matrix.                            |

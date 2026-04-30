@@ -1,4 +1,4 @@
-// Phase E2 — bootstrap wizard. Maps multi-step QuickPick answers to a
+// Bootstrap wizard. Maps multi-step QuickPick answers to a
 // 'specs bootstrap ...' invocation.
 import * as vscode from "vscode";
 import { runInTerminal, runAndCapture, getOutput } from "./engine";

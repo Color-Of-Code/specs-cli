@@ -1,4 +1,4 @@
-// Phase E4 — Status bar item showing current CR slug or tools_dir SHA.
+// Status bar item showing current CR slug or tools_dir SHA.
 import * as cp from "child_process";
 import * as vscode from "vscode";
 import { runAndCapture, findSpecsFolder, findSpecsRoot } from "./engine";
