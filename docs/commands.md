@@ -12,7 +12,7 @@ Every command below is reachable both as `specs <command>` on the terminal and f
   Scaffold a new host. `managed` is the default framework mode. `--layout submodule` requires `--specs-url`. Path-based registry entries are not supported here — use `specs init --framework <name>` on an existing host instead.
 - `specs lint [--all] [--links] [--style] [--baselines]` — run lint checks. With no flag, all checks run.
 - `specs format [--check] [--at <path>] [files...]` — format markdown files in place; `--check` exits non-zero if any file would change.
-- `specs tools update [--to <ref>]` — update the `.specs-framework` content layer.
+- `specs framework update [--to <ref>]` — update the `.specs-framework` content layer.
 - `specs scaffold <kind> [--cr <NNN>] [--title <t>] [--force] [--dry-run] <path>` — instantiate a template (`requirement`, `feature`, `component`, `api`, or `service`).
 - `specs cr new --id <NNN> --slug <slug> [--title <t>] [--force] [--dry-run]` — create a new change request from the template tree.
 - `specs cr status` — list change requests with file counts per area.

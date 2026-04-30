@@ -12,9 +12,9 @@ the framework maintainer without re-bootstrapping the host.
 
 ## Entry point
 
-`specs tools update [--to <ref>]`
+`specs framework update [--to <ref>]`
 
-Or VS Code palette: **Specs: Update tools**.
+Or VS Code palette: **Specs: Framework: Update cache**.
 
 Pre-conditions: the host is in `managed` framework mode (or a writable
 checkout); network access to the framework source URL.

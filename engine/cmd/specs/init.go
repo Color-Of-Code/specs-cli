@@ -180,10 +180,10 @@ const vscodeTasksJSON = `{
       "problemMatcher": []
     },
     {
-      "label": "Specs: Tools Update",
+      "label": "Specs: Framework Update",
       "type": "shell",
       "command": "specs",
-      "args": ["tools", "update"],
+      "args": ["framework", "update"],
       "problemMatcher": []
     },
     {

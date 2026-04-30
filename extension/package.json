@@ -66,8 +66,8 @@
         "category": "Specs"
       },
       {
-        "command": "specs.toolsUpdate",
-        "title": "Tools: Update cache",
+        "command": "specs.frameworkUpdate",
+        "title": "Framework: Update cache",
         "category": "Specs"
       },
       {

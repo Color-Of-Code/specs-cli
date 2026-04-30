@@ -21,8 +21,8 @@ export function registerCommands(context: vscode.ExtensionContext): void {
   // Diagnostics.
   reg("specs.doctor", () => runTerminal(context, ["doctor"]));
 
-  // Tools cache.
-  reg("specs.toolsUpdate", () => runTerminal(context, ["tools", "update"]));
+  // Framework content cache.
+  reg("specs.frameworkUpdate", () => runTerminal(context, ["framework", "update"]));
 
   // Visualize (writes a file in model/ and opens it).
   reg("specs.visualize.dot", () => visualize(context, "dot"));

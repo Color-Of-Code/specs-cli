@@ -26,14 +26,13 @@ func init() {
 		{"bootstrap", "scaffold a new host with .specs.yaml and .specs-framework content", cmdBootstrap},
 		{"lint", "run lint checks (--all|--links|--style|--baselines)", cmdLint},
 		{"format", "format markdown files (tables, whitespace, line endings)", cmdFormat},
-		{"tools", "manage the .specs-framework content layer (update)", cmdTools},
 		{"scaffold", "instantiate a template (requirement|feature|component|api|service)", cmdScaffold},
 		{"cr", "change-request operations (new, status, drain)", cmdCR},
 		{"baseline", "verify or update component baselines (check, update)", cmdBaseline},
 		{"link", "verify cross-links between requirements and implementers (check)", cmdLink},
 		{"visualize", "render the traceability graph (DOT or Mermaid)", cmdVisualize},
 		{"vscode", "manage .vscode integration (init)", cmdVSCode},
-		{"framework", "manage framework templates (seed)", cmdFramework},
+		{"framework", "manage framework templates and content layer (list, add, remove, seed, update)", cmdFramework},
 	}
 }
 

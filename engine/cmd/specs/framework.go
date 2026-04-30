@@ -7,13 +7,15 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/Color-Of-Code/specs-toolchain/engine/internal/config"
 	"github.com/Color-Of-Code/specs-toolchain/engine/internal/framework"
 	"github.com/Color-Of-Code/specs-toolchain/engine/internal/registry"
+	"github.com/Color-Of-Code/specs-toolchain/engine/internal/tools"
 )
 
 func cmdFramework(args []string) error {
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "Usage: specs framework <list|add|remove|seed>")
+		fmt.Fprintln(os.Stderr, "Usage: specs framework <list|add|remove|seed|update>")
 		return exitWith(2, "missing subcommand")
 	}
 	switch args[0] {
@@ -25,12 +27,102 @@ func cmdFramework(args []string) error {
 		return cmdFrameworkRemove(args[1:])
 	case "seed":
 		return cmdFrameworkSeed(args[1:])
+	case "update":
+		return cmdFrameworkUpdate(args[1:])
 	case "-h", "--help", "help":
-		fmt.Fprintln(os.Stderr, "Usage: specs framework <list|add|remove|seed> [flags]")
+		fmt.Fprintln(os.Stderr, "Usage: specs framework <list|add|remove|seed|update> [flags]")
 		return nil
 	default:
 		return exitWith(2, "unknown subcommand: specs framework %s", args[0])
 	}
+}
+
+// cmdFrameworkUpdate updates the .specs-framework content layer in place.
+//
+//	managed:   fetch into the user cache and rewrite framework_ref
+//	submodule: git fetch + checkout, then host-side git add
+//	folder:    git pull (or checkout <ref>)
+//	vendor:    re-clone tarball-style at the requested ref
+func cmdFrameworkUpdate(args []string) error {
+	fs2 := flag.NewFlagSet("framework update", flag.ContinueOnError)
+	to := fs2.String("to", "", "tag/branch/commit to check out (empty = pull current branch / default branch)")
+	fs2.Usage = func() {
+		fmt.Fprintln(os.Stderr, "Usage: specs framework update [--to <ref>]")
+		fs2.PrintDefaults()
+	}
+	if err := fs2.Parse(args); err != nil {
+		return err
+	}
+
+	cfg, err := config.Load("")
+	if err != nil {
+		return err
+	}
+
+	switch cfg.FrameworkMode {
+	case config.FrameworkModeManaged:
+		return updateManagedFramework(cfg, *to)
+	}
+
+	if cfg.FrameworkDir == "" {
+		return exitWith(1, "framework_dir not found; run `specs bootstrap` (managed) or set framework_dir (dev)")
+	}
+
+	switch cfg.FrameworkMode {
+	case config.FrameworkModeSubmodule, config.FrameworkModeFolder:
+		if err := runGit(cfg.FrameworkDir, "fetch", "--tags"); err != nil {
+			return err
+		}
+		if *to != "" {
+			if err := runGit(cfg.FrameworkDir, "checkout", *to); err != nil {
+				return err
+			}
+		} else {
+			// pull on current branch; if detached, this is a no-op-ish error
+			// that we report but do not fail on.
+			_ = runGit(cfg.FrameworkDir, "pull", "--ff-only")
+		}
+		if cfg.FrameworkMode == config.FrameworkModeSubmodule && cfg.HostRoot != "" {
+			rel, _ := filepath.Rel(cfg.HostRoot, cfg.FrameworkDir)
+			_ = runGit(cfg.HostRoot, "add", rel)
+			fmt.Println("staged submodule pointer in host; remember to commit.")
+		}
+		return nil
+	case config.FrameworkModeVendor:
+		return exitWith(2, "framework_mode=vendor: re-run `specs bootstrap --framework-mode vendor --framework-ref <ref>` to refresh")
+	case config.FrameworkModeMissing:
+		return exitWith(1, "framework_dir is missing on disk; run `specs bootstrap`")
+	default:
+		return exitWith(1, "unknown framework_mode %q", cfg.FrameworkMode)
+	}
+}
+
+// updateManagedFramework fetches the requested ref into the user cache and rewrites
+// framework_ref in .specs.yaml so subsequent invocations resolve to it.
+func updateManagedFramework(cfg *config.Resolved, to string) error {
+	ref := to
+	if ref == "" {
+		ref = cfg.FrameworkRef
+	}
+	if ref == "" {
+		ref = "main"
+	}
+	path, err := tools.Ensure(cfg.FrameworkURL, ref)
+	if err != nil {
+		return exitWith(1, "fetch %s@%s: %v", cfg.FrameworkURL, ref, err)
+	}
+	fmt.Printf("managed framework cached at %s\n", path)
+
+	// Rewrite framework_ref in .specs.yaml only when the caller pinned a new ref.
+	if to != "" && to != cfg.FrameworkRef && cfg.ConfigPath != "" && cfg.Source != nil {
+		newFile := *cfg.Source
+		newFile.FrameworkRef = to
+		if err := config.Save(cfg.ConfigPath, &newFile); err != nil {
+			return exitWith(1, "write %s: %v", cfg.ConfigPath, err)
+		}
+		fmt.Printf("updated %s: framework_ref=%s\n", cfg.ConfigPath, to)
+	}
+	return nil
 }
 
 // cmdFrameworkList prints all registered framework entries.

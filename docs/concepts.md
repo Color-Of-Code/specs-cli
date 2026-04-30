@@ -102,7 +102,7 @@ The engine fetches `.specs-framework` once into the user data dir and re-uses it
 
 - Location: `os.UserCacheDir()` + `/specs-toolchain/tools/<ref>/`. On Linux that resolves to `${XDG_CACHE_HOME:-~/.cache}/specs-toolchain/tools/<ref>/`; on macOS `~/Library/Caches/specs-toolchain/tools/<ref>/`; on Windows `%LocalAppData%\specs-toolchain\tools\<ref>`.
 - Version pin: `framework_ref` in `.specs.yaml` (a tag or commit). The host commits **only** `.specs.yaml`; nothing else.
-- Refreshing: `specs tools update --to <ref>` rewrites `framework_ref` and re-fetches if needed.
+- Refreshing: `specs framework update --to <ref>` rewrites `framework_ref` and re-fetches if needed.
 - This is what `specs bootstrap` and `specs init` give you by default.
 
 ### dev — a regular checkout you can edit
