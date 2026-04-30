@@ -1,18 +1,50 @@
 # Development
 
+The repository is split in two halves with separate toolchains:
+
+- `cli/` — the Go CLI (the engine).
+- `extension/` — the VS Code extension that wraps the CLI. It is a standalone pnpm project; all Node tooling lives there.
+
+A small top-level [`Makefile`](../Makefile) ties them together for the common cases (build, lint, format, package, deploy-dev).
+
+## Quick reference
+
+```bash
+make build              # build CLI + extension
+make build-cli          # CLI binary only -> ./specs
+make build-extension    # compile extension TypeScript
+make package-extension  # produce a .vsix
+make deploy-dev         # build + symlink extension into ~/.vscode/extensions
+make check              # format-check + lint
+make format             # format all .md files in place
+make format-check       # exit 1 if any .md needs formatting
+make lint               # specs lint --style
+```
+
 ## CLI
 
 ```bash
+cd cli
 go test ./...
 go build ./...
-go install ./cmd/specs
+go install ./cmd/specs    # installs into $(go env GOBIN)
+```
+
+Or run without installing:
+
+```bash
+make build-cli            # produces ./specs at the repo root
 ```
 
 ## VS Code extension
 
+The extension is its own pnpm project (`pnpm-workspace.yaml`, `pnpm-lock.yaml`, and `.npmrc` all live under `extension/`). It pins pnpm `10.33.2`, uses Node `24.15.0`, and enforces a 7-day minimum release age for new dependencies.
+
 ```bash
-pnpm --filter ./extension install
-pnpm --filter ./extension run compile
+cd extension
+pnpm install
+pnpm run compile          # one-off TypeScript build
+pnpm run watch            # incremental
 ```
 
 See [extension/README.md](../extension/README.md) for the extension-specific settings, packaging notes, and platform matrix.
@@ -22,85 +54,65 @@ See [extension/README.md](../extension/README.md) for the extension-specific set
 Repo-level docs are checked and formatted entirely by the Go CLI — no Node.js tools required. Style defaults are compiled into the binary ([`cli/internal/lint/style_defaults.yaml`](../cli/internal/lint/style_defaults.yaml)).
 
 ```bash
-specs format          # format all .md files in place
-specs format --check  # check formatting (exit 1 if changes needed)
-specs lint --style    # run style lint rules
+specs format             # format all .md files in place
+specs format --check     # check formatting (exit 1 if changes needed)
+specs lint --style       # run style lint rules
 ```
 
-Or via pnpm scripts:
+Or via the Makefile:
 
 ```bash
-pnpm run md:format   # specs format
-pnpm run md:check    # specs format --check + specs lint --style (what CI runs)
-pnpm run md:lint     # specs lint --style only
+make format        # specs format
+make format-check  # specs format --check
+make lint          # specs lint --style
+make check         # format-check + lint (what CI runs)
 ```
 
 The `markdown` job in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs the same checks on every push and pull request.
 
-## Build (extension & CLI)
-
-To build both the VS Code extension and the CLI binary in one step:
-
-```bash
-pnpm run build
-```
-
-- The CLI binary is built to `specs-toolchain/specs`.
-- The extension is compiled in `specs-toolchain/extension`.
-
-You can also build them individually:
-
-```bash
-pnpm run build:cli         # builds Go CLI
-pnpm run build:extension   # builds VS Code extension
-```
-
 ## Releases
 
-Cross-platform release builds are produced by GoReleaser on git tags (`v*.*.*`). See [`cli/.goreleaser.yaml`](../cli/.goreleaser.yaml). Per-platform `.vsix` artifacts are attached to GitHub releases via `pnpm run package:extension -- <target>`, which stages the matching CLI binary into the extension before packaging.
+Cross-platform release builds are produced by GoReleaser on git tags (`v*.*.*`). See [`cli/.goreleaser.yaml`](../cli/.goreleaser.yaml). Per-platform `.vsix` artifacts are produced by [`extension/scripts/build-extension.ts`](../extension/scripts/build-extension.ts), which stages the matching CLI binary into the extension before packaging:
+
+```bash
+cd extension
+pnpm run package:bundled -- <target>
+# targets: linux-x64 linux-arm64 darwin-x64 darwin-arm64 win32-x64
+```
+
+`make package-extension` runs the same script for the host platform.
 
 ## Status
 
 Phase 1 — lint, layout auto-detection, `init` / `bootstrap` / `tools update`, **managed mode** (cache + auto-fetch).
-**Phase 2** — `scaffold`, `cr {new,status,drain}`, `baseline {check,update}`, `link check`, `vscode init` shipped.
+**Phase 2** — `scaffold`, `cr {new,status,drain}`, `baseline update`, `link check`, `vscode init` shipped.
 **Phase 3** — `visualize traceability` (DOT and Mermaid), `templates_schema` enforcement, `--layout submodule` shipped.
-**VS Code extension** under `extension/` (in progress; see [extension/README.md](../extension/README.md)).
-
-## pnpm
-
-This repo uses [pnpm](https://pnpm.io/) for all dev tooling, pins pnpm `10.33.2`, uses Node `24.15.0` for pnpm-managed commands, and enforces a 7-day minimum package release age during installs. If you have npm artifacts from a previous version, remove them:
-
-```bash
-rm -rf node_modules extension/node_modules package-lock.json extension/package-lock.json
-pnpm install
-```
-
-Use `pnpm run ...` for repo scripts.
+**Phase 4** — framework registry (`specs framework list/add/remove`, `--framework <name>` on `init`/`bootstrap`).
+**VS Code extension** under `extension/` (see [extension/README.md](../extension/README.md)).
 
 ## Developing the VS Code Extension Locally
 
-To incrementally test the VS Code extension without reinstalling it on every iteration, use `pnpm run deploy-dev`. That command sets up a symlink for live development, allowing changes to be picked up immediately after reloading the VS Code window.
+To incrementally test the extension without reinstalling on every iteration, use `make deploy-dev`. It builds and symlinks the extension folder into `~/.vscode/extensions`, so changes are picked up on the next window reload.
 
 ### Steps
 
-1. **Run the Deployment Command**
+1. **Build and symlink**
 
    ```bash
-   pnpm run deploy-dev
+   make deploy-dev
    ```
 
-   This command will:
-   - Remove any previously installed `.vsix`-based extension (with confirmation).
-   - Build the `specs` CLI binary into `extension/bin/`.
+   This will:
+   - Build the `specs` CLI binary into `./specs` and (via the script) `extension/bin/`.
    - Compile the TypeScript extension source.
-   - Symlink the `extension` folder into `~/.vscode/extensions/`.
+   - Symlink the `extension` folder into `~/.vscode/extensions/Color-Of-Code.specs`.
 
-2. **Reload the VS Code Window**
+2. **Reload the VS Code window**
 
-   After running the script, reload your VS Code window to apply the changes.
+   After running the command, reload the VS Code window (Command Palette → **Developer: Reload Window**) to apply the changes.
 
-3. **Iterate on Changes**
+3. **Iterate**
 
-   Any changes made to the extension source code will be reflected immediately after reloading the window.
+   Re-run `make build-extension` (or `cd extension && pnpm run watch` for live recompilation) and reload the window to pick up further edits.
 
-This workflow ensures a smooth development experience without the need for repetitive installations.
+If you previously installed a `.vsix` of this extension, uninstall it first so the symlinked one takes precedence.
