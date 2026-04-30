@@ -25,6 +25,7 @@ func init() {
 		{"init", "configure an existing host (writes .specs.yaml, optional .vscode tasks)", cmdInit},
 		{"bootstrap", "scaffold a new host with .specs.yaml and .specs-framework content", cmdBootstrap},
 		{"lint", "run lint checks (--all|--links|--style|--baselines)", cmdLint},
+		{"format", "format markdown files (tables, whitespace, line endings)", cmdFormat},
 		{"tools", "manage the .specs-framework content layer (update)", cmdTools},
 		{"scaffold", "instantiate a template (requirement|feature|component|api|service)", cmdScaffold},
 		{"cr", "change-request operations (new, status, drain)", cmdCR},
