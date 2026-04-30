@@ -37,7 +37,6 @@ func (r *Result) warnf(format string, a ...any) {
 // (e.g. extension/node_modules/...).
 var excludedPathComponents = map[string]struct{}{
 	".specs-framework": {},
-	".specs-tools":     {},
 	".lint":            {},
 	"node_modules":     {},
 	".git":             {},

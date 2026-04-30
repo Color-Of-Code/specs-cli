@@ -109,7 +109,6 @@ func isExcludedPath(rel string) bool {
 	rel = filepath.ToSlash(rel)
 	excluded := map[string]struct{}{
 		".specs-framework": {},
-		".specs-tools":     {},
 		".git":             {},
 		"node_modules":     {},
 		".lint":            {},

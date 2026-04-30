@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"runtime"
 
 	"github.com/Color-Of-Code/specs-toolchain/engine/internal/config"
@@ -181,9 +180,6 @@ func containsByte(s string, c byte) bool {
 	}
 	return false
 }
-
-// joinPath is a small helper used by other commands.
-func joinPath(parts ...string) string { return filepath.Join(parts...) }
 
 func emitDoctorJSON(cfg *config.Resolved) error {
 	repos := map[string]string{}
