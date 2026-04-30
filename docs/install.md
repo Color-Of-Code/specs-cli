@@ -42,7 +42,7 @@ Installing the extension and the engine side by side is fine and common: the ext
 
 ## Advanced: starting with a custom framework
 
-By default, `specs init` pulls the official [specs-framework](https://github.com/Color-Of-Code/specs-framework) content. If your organisation maintains its own framework, pass `--framework <source>` (registered name, git URL, or local path).
+Before running `specs init`, register the framework you want to use with `specs framework add` — for example, `specs framework add default --url https://github.com/Color-Of-Code/specs-framework.git --ref main`. `specs init` then resolves `--framework <name>` against the registry; with no `--framework` it picks the entry called `default`.
 
 If you need to create a **brand-new framework from scratch** rather than forking an existing one:
 

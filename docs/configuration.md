@@ -102,6 +102,6 @@ frameworks:
 
 When `specs init` determines which framework to use:
 
-1. Explicit `--framework <source>` value (highest priority): a remote URL `[@ref]`, a local path, or a registry name `[@ref]`.
+1. Explicit `--framework <name>[@ref]` value (highest priority): looked up in the registry; an `@ref` suffix overrides the registered ref for URL-based entries.
 2. The registry's `default` entry (if it exists and `--framework` is omitted).
 3. Hard-coded fallback: `https://github.com/Color-Of-Code/specs-framework.git@main`.

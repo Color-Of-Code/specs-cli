@@ -61,8 +61,9 @@ func TestInit_WritesConfig_FrameworkDir(t *testing.T) {
 	bin := buildBinary(t)
 	host := t.TempDir()
 	env := isolatedEnv(t)
+	registerPath(t, bin, host, env, "local-dev", "../specs-framework")
 
-	out, se, code := runSpecsEnv(t, bin, host, env, "init", "--framework", "../specs-framework")
+	out, se, code := runSpecsEnv(t, bin, host, env, "init", "--framework", "local-dev")
 	if code != 0 {
 		t.Fatalf("exit %d\nstdout:%s\nstderr:%s", code, out, se)
 	}
@@ -81,11 +82,12 @@ func TestInit_FailsWithoutForce(t *testing.T) {
 	bin := buildBinary(t)
 	host := t.TempDir()
 	env := isolatedEnv(t)
+	registerPath(t, bin, host, env, "x", "./x")
 
-	if _, _, code := runSpecsEnv(t, bin, host, env, "init", "--framework", "./x"); code != 0 {
+	if _, _, code := runSpecsEnv(t, bin, host, env, "init", "--framework", "x"); code != 0 {
 		t.Fatalf("first init unexpectedly failed (exit %d)", code)
 	}
-	_, se, code := runSpecsEnv(t, bin, host, env, "init", "--framework", "./x")
+	_, se, code := runSpecsEnv(t, bin, host, env, "init", "--framework", "x")
 	if code == 0 {
 		t.Fatalf("expected non-zero exit when .specs.yaml exists without --force")
 	}
@@ -98,9 +100,10 @@ func TestInit_RejectsConflictingFlags(t *testing.T) {
 	bin := buildBinary(t)
 	host := t.TempDir()
 	env := isolatedEnv(t)
+	registerURL(t, bin, host, env, "demo", "https://example.com/x.git", "")
 
 	_, _, code := runSpecsEnv(t, bin, host, env,
-		"init", "--framework", "https://example.com/x.git", "unexpected", "extra", "args")
+		"init", "--framework", "demo", "unexpected", "extra", "args")
 	if code == 0 {
 		t.Fatalf("expected non-zero exit for too many positional args")
 	}
@@ -110,8 +113,9 @@ func TestDoctor_JSON_AfterInit(t *testing.T) {
 	bin := buildBinary(t)
 	host := t.TempDir()
 	env := isolatedEnv(t)
+	registerPath(t, bin, host, env, "local-dev", "../specs-framework")
 
-	if _, se, code := runSpecsEnv(t, bin, host, env, "init", "--framework", "../specs-framework"); code != 0 {
+	if _, se, code := runSpecsEnv(t, bin, host, env, "init", "--framework", "local-dev"); code != 0 {
 		t.Fatalf("init failed: exit %d\n%s", code, se)
 	}
 	out, se, code := runSpecsEnv(t, bin, host, env, "doctor", "--json")

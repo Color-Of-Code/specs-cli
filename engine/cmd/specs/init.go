@@ -24,19 +24,17 @@ import (
 // `<path>` defaults to the current directory.
 //
 // `--framework <source>` accepts:
-//   - a registered name           (e.g. "default", "acme")
-//   - a name with ref override    (e.g. "acme@v2.1")
-//   - a remote git URL            (e.g. "https://github.com/foo/bar.git[@ref]",
-//     "git@github.com:foo/bar.git[@ref]")
-//   - a local path                (e.g. "./fw", "../specs-framework", "/abs/dir")
+//   - omitted              -> the registry's "default" entry
+//   - a registered name    (e.g. "default", "acme")
+//   - a name with ref override (e.g. "acme@v2.1") for URL-based entries
 //
-// Remote sources are fetched into the user cache (managed mode); the host
-// commits only `.specs.yaml`. Local paths are recorded in `framework_dir`
-// and left untouched, so the user can keep the framework as a plain folder,
-// a git submodule, or a vendored snapshot — whichever fits the host.
+// Frameworks must be registered first via `specs framework add`. URLs and
+// filesystem paths are not accepted directly. The registry decides whether
+// the source is a remote git URL (managed mode) or a local directory
+// (local mode).
 func cmdInit(args []string) error {
 	fs := flag.NewFlagSet("init", flag.ContinueOnError)
-	frameworkSpec := fs.String("framework", "", "framework source: registry name[@ref], git URL[@ref], or local path (default: registry's \"default\" entry)")
+	frameworkSpec := fs.String("framework", "", "registered framework name (or name@ref for URL-based entries); empty resolves the \"default\" entry. Register sources with `specs framework add` first.")
 	withModel := fs.Bool("with-model", false, "create empty model/ and change-requests/ skeletons")
 	withVSCode := fs.Bool("with-vscode", false, "write .vscode/tasks.json")
 	force := fs.Bool("force", false, "overwrite an existing .specs.yaml")

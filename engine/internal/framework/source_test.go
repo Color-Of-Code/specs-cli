@@ -2,69 +2,113 @@ package framework
 
 import (
 	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
+
+	"github.com/Color-Of-Code/specs-toolchain/engine/internal/registry"
 )
 
-func TestResolveSource_RemoteURLs(t *testing.T) {
-	cases := []struct {
-		spec    string
-		wantURL string
-		wantRef string
-	}{
-		{"https://example.com/foo.git", "https://example.com/foo.git", ""},
-		{"https://example.com/foo.git@v1.0", "https://example.com/foo.git", "v1.0"},
-		{"git@github.com:owner/repo.git", "git@github.com:owner/repo.git", ""},
-		{"git@github.com:owner/repo.git@main", "git@github.com:owner/repo.git", "main"},
-		{"ssh://git@example.com/x.git", "ssh://git@example.com/x.git", ""},
-	}
-	for _, tc := range cases {
-		t.Run(tc.spec, func(t *testing.T) {
-			s, err := ResolveSource(tc.spec)
-			if err != nil {
-				t.Fatalf("ResolveSource(%q): %v", tc.spec, err)
-			}
-			if s.URL != tc.wantURL || s.Ref != tc.wantRef || s.Path != "" {
-				t.Errorf("got %+v; want URL=%q Ref=%q", s, tc.wantURL, tc.wantRef)
-			}
-		})
-	}
-}
-
-func TestResolveSource_LocalPaths(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("path normalisation differs on windows")
-	}
-	cases := []string{"./foo", "../bar", "/tmp"}
-	for _, spec := range cases {
-		t.Run(spec, func(t *testing.T) {
-			s, err := ResolveSource(spec)
-			if err != nil {
-				t.Fatalf("ResolveSource(%q): %v", spec, err)
-			}
-			if s.URL != "" || s.Ref != "" {
-				t.Errorf("path spec resolved as URL: %+v", s)
-			}
-			if !filepath.IsAbs(s.Path) {
-				t.Errorf("path not absolute: %q", s.Path)
-			}
-		})
-	}
-}
-
-func TestResolveSource_PathRejectsRef(t *testing.T) {
-	// The "@ref" suffix is never split off a path-style spec, so when a
-	// caller passes "/tmp@v1" they get a literal path.
-	s, err := ResolveSource("/tmp@v1")
+// withRegistry redirects user config lookup to a tempdir and writes the
+// supplied registry. Returns the registry's on-disk path.
+func withRegistry(t *testing.T, r *registry.Registry) string {
+	t.Helper()
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	t.Setenv("XDG_CONFIG_HOME", filepath.Join(home, ".config"))
+	// macOS path that os.UserConfigDir reads; setting it harmless on linux.
+	t.Setenv("LocalAppData", filepath.Join(home, "AppData", "Local"))
+	path, err := registry.DefaultPath()
 	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatal(err)
 	}
-	if s.Ref != "" {
-		t.Errorf("ref unexpectedly extracted from path: %+v", s)
+	if r != nil {
+		if err := r.Save(path); err != nil {
+			t.Fatal(err)
+		}
 	}
-	if !strings.HasSuffix(s.Path, "@v1") {
-		t.Errorf("path lost @v1 suffix: %q", s.Path)
+	return path
+}
+
+func TestResolveSource_RegisteredURLEntry(t *testing.T) {
+	withRegistry(t, &registry.Registry{Frameworks: map[string]registry.Entry{
+		"acme": {URL: "https://example.com/fw.git", Ref: "v1"},
+	}})
+	s, err := ResolveSource("acme")
+	if err != nil {
+		t.Fatalf("ResolveSource: %v", err)
+	}
+	if s.URL != "https://example.com/fw.git" || s.Ref != "v1" || s.Path != "" {
+		t.Errorf("got %+v; want URL+Ref entry", s)
+	}
+}
+
+func TestResolveSource_RegisteredPathEntry(t *testing.T) {
+	withRegistry(t, &registry.Registry{Frameworks: map[string]registry.Entry{
+		"local-dev": {Path: "/tmp/fw"},
+	}})
+	s, err := ResolveSource("local-dev")
+	if err != nil {
+		t.Fatalf("ResolveSource: %v", err)
+	}
+	if s.Path != "/tmp/fw" || s.URL != "" || s.Ref != "" {
+		t.Errorf("got %+v; want Path entry", s)
+	}
+}
+
+func TestResolveSource_RefOverride(t *testing.T) {
+	withRegistry(t, &registry.Registry{Frameworks: map[string]registry.Entry{
+		"acme": {URL: "https://example.com/fw.git", Ref: "v1"},
+	}})
+	s, err := ResolveSource("acme@v2")
+	if err != nil {
+		t.Fatalf("ResolveSource: %v", err)
+	}
+	if s.Ref != "v2" {
+		t.Errorf("ref override not applied: %+v", s)
+	}
+}
+
+func TestResolveSource_RefOverrideOnPathEntryFails(t *testing.T) {
+	withRegistry(t, &registry.Registry{Frameworks: map[string]registry.Entry{
+		"local-dev": {Path: "/tmp/fw"},
+	}})
+	if _, err := ResolveSource("local-dev@main"); err == nil {
+		t.Error("expected error for @ref on path-based entry")
+	}
+}
+
+func TestResolveSource_EmptySpecResolvesDefault(t *testing.T) {
+	withRegistry(t, &registry.Registry{Frameworks: map[string]registry.Entry{
+		"default": {URL: "https://example.com/default.git"},
+	}})
+	s, err := ResolveSource("")
+	if err != nil {
+		t.Fatalf("ResolveSource: %v", err)
+	}
+	if s.URL != "https://example.com/default.git" {
+		t.Errorf("default lookup failed: %+v", s)
+	}
+}
+
+func TestResolveSource_UnknownNameFails(t *testing.T) {
+	withRegistry(t, &registry.Registry{})
+	_, err := ResolveSource("nope")
+	if err == nil {
+		t.Fatal("expected error for unknown framework")
+	}
+	if !strings.Contains(err.Error(), "specs framework add") {
+		t.Errorf("expected hint about `specs framework add` in error: %v", err)
+	}
+}
+
+func TestResolveSource_EmptySpecWithEmptyRegistryFails(t *testing.T) {
+	withRegistry(t, &registry.Registry{})
+	_, err := ResolveSource("")
+	if err == nil {
+		t.Fatal("expected error when no default is registered")
+	}
+	if !strings.Contains(err.Error(), `"default"`) {
+		t.Errorf("expected error to mention 'default': %v", err)
 	}
 }
 

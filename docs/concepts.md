@@ -103,7 +103,7 @@ The engine fetches `.specs-framework` once into the user data dir and re-uses it
 - Location: `os.UserCacheDir()` + `/specs-toolchain/framework/<ref>/`. On Linux that resolves to `${XDG_CACHE_HOME:-~/.cache}/specs-toolchain/framework/<ref>/`; on macOS `~/Library/Caches/specs-toolchain/framework/<ref>/`; on Windows `%LocalAppData%\specs-toolchain\framework\<ref>`.
 - Version pin: `framework_ref` in `.specs.yaml` (a tag or commit). The host commits **only** `.specs.yaml`; nothing else.
 - Refreshing: `specs framework update --to <ref>` rewrites `framework_ref` and re-fetches if needed.
-- This is what `specs init` gives you when `--framework` points at a registry name or a remote git URL.
+- This is what `specs init` gives you when `--framework` resolves to a URL-based registry entry.
 
 ### local — a directory you supply
 

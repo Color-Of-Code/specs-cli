@@ -9,7 +9,8 @@ interface InitAnswers {
   withVscode: boolean;
 }
 
-const DEFAULT_FRAMEWORK = "https://github.com/Color-Of-Code/specs-framework.git@main";
+const FRAMEWORK_PROMPT =
+  "Registered framework name (--framework). Optional `@ref` overrides the registered ref. Leave empty to use the registry's `default` entry.";
 
 export async function runBootstrapWizard(context: vscode.ExtensionContext): Promise<void> {
   const folder = pickFolder();
@@ -18,11 +19,9 @@ export async function runBootstrapWizard(context: vscode.ExtensionContext): Prom
   }
 
   const framework = await vscode.window.showInputBox({
-    prompt:
-      "Framework source (--framework): registered name, name@ref, git URL[@ref], or local path",
-    value: DEFAULT_FRAMEWORK,
+    prompt: FRAMEWORK_PROMPT,
+    value: "",
     ignoreFocusOut: true,
-    validateInput: (v) => (v.trim().length === 0 ? "framework source is required" : null),
   });
   if (framework === undefined) {
     return;
@@ -81,7 +80,10 @@ export async function runBootstrapWizard(context: vscode.ExtensionContext): Prom
 }
 
 function buildArgs(a: InitAnswers): string[] {
-  const args = ["init", "--framework", a.framework];
+  const args = ["init"];
+  if (a.framework !== "") {
+    args.push("--framework", a.framework);
+  }
   if (a.withModel) {
     args.push("--with-model");
   }

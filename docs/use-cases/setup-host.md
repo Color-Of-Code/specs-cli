@@ -22,39 +22,37 @@ Existing model content is left untouched.
 
 ```text
 specs init [<path>]
-           [--framework <source>]
+           [--framework <name>[@ref]]
            [--with-model] [--with-vscode]
            [--force] [--dry-run]
 ```
 
 `<path>` defaults to the current directory and is created if missing.
-`--framework` accepts:
-
-- a registered name: `default`, `acme`, `local-dev`
-- a name with ref override: `acme@v2.1`
-- a remote git URL: `https://github.com/foo/bar.git[@ref]`,
-  `git@host:owner/repo.git[@ref]`
-- a local path: `./fw`, `../specs-framework`, `/abs/dir`
-
+`--framework` takes a name previously registered with
+[`specs framework add`](manage-framework-registry.md): for example
+`default`, `acme`, or `acme@v2.1` to override the registered ref.
 When `--framework` is omitted the registry's `default` entry is used.
-Remote sources are fetched into the user cache (managed mode); local
-paths are recorded in `framework_dir` and left untouched, so the host
-can hold the framework as a plain folder, a git submodule, or a
-vendored snapshot — whichever fits.
+
+If no entries are registered, `specs init` fails with a hint pointing at
+`specs framework add`. URLs and filesystem paths are not accepted on the
+`specs init` command line: register them once and refer to them by name.
 
 ## Exit point
 
 A directory containing `.specs.yaml` resolving the framework source,
-the managed cache populated when the source is remote, and (when
-requested) `model/`, `change-requests/`, and `.vscode/tasks.json`.
-The directory is committable as-is. `--force` overwrites an existing
-`.specs.yaml`; otherwise the command refuses.
+the managed cache populated when the registered entry is URL-based, and
+(when requested) `model/`, `change-requests/`, and
+`.vscode/tasks.json`. The directory is committable as-is. `--force`
+overwrites an existing `.specs.yaml`; otherwise the command refuses.
 
 ## Workflow
 
-1. Pick the framework source and pass it as `--framework <source>`
-   (or rely on the registry's `default` entry).
-2. Run `specs init` with `--dry-run` first to preview the file plan.
+1. Make sure the framework you want to use is registered (see
+   [manage the framework registry](manage-framework-registry.md)). The
+   `default` entry is what `specs init` picks when `--framework` is
+   omitted.
+2. Run `specs init --framework <name>` (or just `specs init` to use
+   `default`) with `--dry-run` first to preview the file plan.
 3. Re-run without `--dry-run` to materialise the host.
 4. Run [`specs doctor`](diagnose-environment.md) to confirm paths,
    versions, and framework resolution.
@@ -63,6 +61,7 @@ The directory is committable as-is. `--force` overwrites an existing
 
 Re-run with `--force` to rewrite `.specs.yaml`, or edit the file
 manually for individual key changes (framework source, repo mappings,
-lint config path). Switching from managed to a local checkout is just
-a matter of replacing `framework_url` + `framework_ref` with
-`framework_dir` in `.specs.yaml`.
+lint config path). Switching from a managed entry to a local checkout
+is just a matter of replacing `framework_url` + `framework_ref` with
+`framework_dir` in `.specs.yaml`, or registering a new framework name
+and re-running `specs init --force --framework <new-name>`.
