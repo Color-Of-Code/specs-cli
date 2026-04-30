@@ -11,52 +11,26 @@ import (
 	"strings"
 
 	"github.com/Color-Of-Code/specs-toolchain/cli/internal/config"
-	"github.com/Color-Of-Code/specs-toolchain/cli/internal/lint"
 )
 
 // cmdBaseline dispatches `specs baseline <subcommand>`.
 func cmdBaseline(args []string) error {
 	if len(args) == 0 {
 		fmt.Fprintln(os.Stderr, "Usage: specs baseline <subcommand>")
-		fmt.Fprintln(os.Stderr, "Subcommands: check, update")
+		fmt.Fprintln(os.Stderr, "Subcommands: update")
 		return exitWith(2, "missing subcommand")
 	}
 	switch args[0] {
-	case "check":
-		return cmdBaselineCheck(args[1:])
 	case "update":
 		return cmdBaselineUpdate(args[1:])
+	case "check":
+		return exitWith(2, "`specs baseline check` was removed; use `specs lint --baselines` instead")
 	case "-h", "--help", "help":
-		fmt.Fprintln(os.Stderr, "Usage: specs baseline <check|update> [flags]")
+		fmt.Fprintln(os.Stderr, "Usage: specs baseline update [flags]")
 		return nil
 	default:
 		return exitWith(2, "unknown baseline subcommand %q", args[0])
 	}
-}
-
-// cmdBaselineCheck is a focused alias for `specs lint --baselines`.
-func cmdBaselineCheck(args []string) error {
-	fs := flag.NewFlagSet("baseline check", flag.ContinueOnError)
-	fs.Usage = func() { fmt.Fprintln(os.Stderr, "Usage: specs baseline check") }
-	if err := fs.Parse(args); err != nil {
-		return err
-	}
-	cfg, err := config.Load("")
-	if err != nil {
-		return err
-	}
-	r := &lint.Result{}
-	lint.CheckBaselines(os.Stdout, cfg, r)
-	for _, w := range r.Warnings {
-		fmt.Fprintln(os.Stderr, "warning:", w)
-	}
-	for _, e := range r.Errors {
-		fmt.Fprintln(os.Stderr, "error:", e)
-	}
-	if r.Failed() {
-		return exitWith(1, "baseline check failed")
-	}
-	return nil
 }
 
 // baselineRowRe matches a Components-table row whose first cell is a link.

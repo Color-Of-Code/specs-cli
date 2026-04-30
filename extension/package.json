@@ -121,11 +121,6 @@
         "category": "Specs"
       },
       {
-        "command": "specs.baseline.check",
-        "title": "Baseline: Check",
-        "category": "Specs"
-      },
-      {
         "command": "specs.baseline.update",
         "title": "Baseline: Update",
         "category": "Specs"

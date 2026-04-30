@@ -44,7 +44,6 @@ export function registerCommands(context: vscode.ExtensionContext): void {
   reg("specs.linkCheck", () => runTerminal(context, ["link", "check"]));
 
   // Baseline.
-  reg("specs.baseline.check", () => runTerminal(context, ["baseline", "check"]));
   reg("specs.baseline.update", () => baselineUpdate(context));
 }
 

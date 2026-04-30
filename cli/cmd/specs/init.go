@@ -176,13 +176,6 @@ const vscodeTasksJSON = `{
       "problemMatcher": []
     },
     {
-      "label": "Specs: Baseline Check",
-      "type": "shell",
-      "command": "specs",
-      "args": ["baseline", "check"],
-      "problemMatcher": []
-    },
-    {
       "label": "Specs: Baseline Update (dry-run)",
       "type": "shell",
       "command": "specs",
