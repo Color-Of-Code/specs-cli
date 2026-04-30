@@ -6,21 +6,21 @@ Three paths matter and are referenced throughout the documentation and in `specs
 
 - **specs root** — the directory that contains `.specs.yaml`, `model/`, and `change-requests/`. This is what `specs` operates on.
 - **host repo** — the git repository that contains the specs root. It can _be_ the specs root (when the repo is dedicated to specs) or contain it as a subdirectory or submodule.
-- **tools dir** — where the generic framework content (`templates/`, `process/`, `skills/`, `agents/`, lint config — collectively `.specs-framework`) is materialised. In **managed** mode this is the user cache dir; in **dev** mode it is whatever `tools_dir` points at.
+- **framework dir** — where the generic framework content (`templates/`, `process/`, `skills/`, `agents/`, lint config — collectively `.specs-framework`) is materialised. In **managed** mode this is the user cache dir; in **dev** mode it is whatever `framework_dir` points at.
 
 `specs doctor` prints all three so you can verify what was detected.
 
 ## Framework sources
 
-A **framework source** is the origin from which `.specs-framework` content is obtained. Every `specs init` or `specs bootstrap` invocation resolves a framework source to populate the tools layer. Three kinds exist:
+A **framework source** is the origin from which `.specs-framework` content is obtained. Every `specs init` or `specs bootstrap` invocation resolves a framework source to populate the framework layer. Three kinds exist:
 
 ### Remote URL (default)
 
 A git URL that the engine clones or caches. This is how most users consume the official `specs-framework` or a company fork:
 
 ```yaml
-tools_url: https://github.com/Color-Of-Code/specs-framework.git
-tools_ref: v1.0.0
+framework_url: https://github.com/Color-Of-Code/specs-framework.git
+framework_ref: v1.0.0
 ```
 
 ### Local path
@@ -28,7 +28,7 @@ tools_ref: v1.0.0
 An existing directory on disk (your own checkout, a vendored snapshot, or a submodule):
 
 ```yaml
-tools_dir: ../specs-framework
+framework_dir: ../specs-framework
 ```
 
 ### Empty seed
@@ -44,14 +44,14 @@ specs framework seed --out /path/to/my-framework
 Once the seeded directory is pushed to a remote you can reference it like any other framework source:
 
 ```yaml
-tools_url: https://git.example.com/my-org/my-framework.git
-tools_ref: main
+framework_url: https://git.example.com/my-org/my-framework.git
+framework_ref: main
 ```
 
 Or point at it locally during development:
 
 ```yaml
-tools_dir: ../my-framework
+framework_dir: ../my-framework
 ```
 
 ## Framework registry
@@ -80,7 +80,7 @@ specs init --framework my-company
 specs bootstrap --framework local-dev
 ```
 
-The `default` entry is used when no `--framework`, `--tools-url`, or `--tools-dir` flag is provided.
+The `default` entry is used when no `--framework`, `--framework-url`, or `--framework-dir` flag is provided.
 
 ### Managing the registry
 
@@ -101,17 +101,17 @@ Regardless of the source, the framework content does **not** have to live inside
 The engine fetches `.specs-framework` once into the user data dir and re-uses it across every host project on the machine. End users never see the content, never commit it, never update it manually.
 
 - Location: `os.UserCacheDir()` + `/specs-toolchain/tools/<ref>/`. On Linux that resolves to `${XDG_CACHE_HOME:-~/.cache}/specs-toolchain/tools/<ref>/`; on macOS `~/Library/Caches/specs-toolchain/tools/<ref>/`; on Windows `%LocalAppData%\specs-toolchain\tools\<ref>`.
-- Version pin: `tools_ref` in `.specs.yaml` (a tag or commit). The host commits **only** `.specs.yaml`; nothing else.
-- Refreshing: `specs tools update --to <ref>` rewrites `tools_ref` and re-fetches if needed.
+- Version pin: `framework_ref` in `.specs.yaml` (a tag or commit). The host commits **only** `.specs.yaml`; nothing else.
+- Refreshing: `specs tools update --to <ref>` rewrites `framework_ref` and re-fetches if needed.
 - This is what `specs bootstrap` and `specs init` give you by default.
 
 ### dev — a regular checkout you can edit
 
-Use this when you are working on the framework itself (editing templates, process docs, skills). Clone `specs-framework` anywhere and point `tools_dir` at it:
+Use this when you are working on the framework itself (editing templates, process docs, skills). Clone `specs-framework` anywhere and point `framework_dir` at it:
 
 ```yaml
 # .specs.yaml
-tools_dir: ../specs-framework # or any absolute/relative path
+framework_dir: ../specs-framework # or any absolute/relative path
 ```
 
 Or use the in-tree submodule layout if you want every contributor on a host project to see the content checked into the repo. Both submodule and plain-folder checkouts are auto-detected.

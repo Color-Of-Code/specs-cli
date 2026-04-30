@@ -1,5 +1,5 @@
 // Package config loads and resolves the host-side .specs.yaml configuration
-// and provides layout auto-detection for the specs/ root and tools_dir.
+// and provides layout auto-detection for the specs/ root and framework_dir.
 package config
 
 import (
@@ -16,8 +16,7 @@ import (
 const FileName = ".specs.yaml"
 
 const (
-	defaultToolsDirName = ".specs-framework"
-	legacyToolsDirName  = ".specs-tools"
+	defaultFrameworkDirName = ".specs-framework"
 )
 
 // SpecsMode describes how the specs root is materialised in the host.
@@ -30,24 +29,24 @@ const (
 	SpecsModeStandalone SpecsMode = "standalone" // not in a git repo
 )
 
-// ToolsMode describes how the framework content is materialised.
-type ToolsMode string
+// FrameworkMode describes how the framework content is materialised.
+type FrameworkMode string
 
 const (
-	ToolsModeManaged   ToolsMode = "managed" // engine-managed read-only checkout in the user cache dir
-	ToolsModeSubmodule ToolsMode = "submodule"
-	ToolsModeFolder    ToolsMode = "folder" // plain folder; may or may not be a git working tree
-	ToolsModeVendor    ToolsMode = "vendor" // vendored snapshot (no .git)
-	ToolsModeMissing   ToolsMode = "missing"
+	FrameworkModeManaged   FrameworkMode = "managed" // engine-managed read-only checkout in the user cache dir
+	FrameworkModeSubmodule FrameworkMode = "submodule"
+	FrameworkModeFolder    FrameworkMode = "folder" // plain folder; may or may not be a git working tree
+	FrameworkModeVendor    FrameworkMode = "vendor" // vendored snapshot (no .git)
+	FrameworkModeMissing   FrameworkMode = "missing"
 )
 
 // File is the on-disk schema for .specs.yaml. Unknown fields are tolerated
 // so newer hosts can opt-in to features without breaking older binaries.
 type File struct {
 	SpecsRoot         string            `yaml:"specs_root,omitempty"`
-	ToolsDir          string            `yaml:"tools_dir,omitempty"`
-	ToolsURL          string            `yaml:"tools_url,omitempty"`
-	ToolsRef          string            `yaml:"tools_ref,omitempty"`
+	FrameworkDir      string            `yaml:"framework_dir,omitempty"`
+	FrameworkURL      string            `yaml:"framework_url,omitempty"`
+	FrameworkRef      string            `yaml:"framework_ref,omitempty"`
 	ChangeRequestsDir string            `yaml:"change_requests_dir,omitempty"`
 	ModelDir          string            `yaml:"model_dir,omitempty"`
 	BaselinesFile     string            `yaml:"baselines_file,omitempty"`
@@ -64,10 +63,10 @@ type Resolved struct {
 	SpecsRoot         string // absolute path; always set
 	HostRoot          string // git repo root; equal to SpecsRoot if mode is repo-root or standalone
 	SpecsMode         SpecsMode
-	ToolsDir          string // absolute path; may be empty if missing
-	ToolsMode         ToolsMode
-	ToolsURL          string // managed mode: upstream git URL
-	ToolsRef          string // managed mode: pinned tag/branch/commit
+	FrameworkDir      string // absolute path; may be empty if missing
+	FrameworkMode     FrameworkMode
+	FrameworkURL      string // managed mode: upstream git URL
+	FrameworkRef      string // managed mode: pinned tag/branch/commit
 	ChangeRequestsDir string // absolute path
 	ModelDir          string // absolute path
 	BaselinesFile     string // absolute path; may not exist
@@ -130,25 +129,25 @@ func Load(start string) (*Resolved, error) {
 	}
 	r.SpecsMode = detectSpecsMode(r.HostRoot, r.SpecsRoot)
 
-	// Resolve tools location. Managed mode wins when tools_url is set: the
-	// content lives in the user cache dir, and tools_dir (if any) is ignored.
-	r.ToolsURL = f.ToolsURL
-	r.ToolsRef = f.ToolsRef
-	if f.ToolsURL != "" {
-		cachePath, err := tools.ManagedPath(f.ToolsRef)
+	// Resolve framework location. Managed mode wins when framework_url is set: the
+	// content lives in the user cache dir, and framework_dir (if any) is ignored.
+	r.FrameworkURL = f.FrameworkURL
+	r.FrameworkRef = f.FrameworkRef
+	if f.FrameworkURL != "" {
+		cachePath, err := tools.ManagedPath(f.FrameworkRef)
 		if err != nil {
 			return nil, fmt.Errorf("resolve managed cache path: %w", err)
 		}
-		r.ToolsDir = cachePath
-		r.ToolsMode = ToolsModeManaged
+		r.FrameworkDir = cachePath
+		r.FrameworkMode = FrameworkModeManaged
 	} else {
-		tools := f.ToolsDir
-		if tools == "" {
-			tools = "auto"
+		dir := f.FrameworkDir
+		if dir == "" {
+			dir = "auto"
 		}
-		resolvedTools, mode := resolveToolsDir(tools, r.SpecsRoot, r.HostRoot)
-		r.ToolsDir = resolvedTools
-		r.ToolsMode = mode
+		resolvedDir, mode := resolveFrameworkDir(dir, r.SpecsRoot, r.HostRoot)
+		r.FrameworkDir = resolvedDir
+		r.FrameworkMode = mode
 	}
 
 	// Resolve other dirs/files (relative paths anchored to SpecsRoot).
@@ -156,11 +155,11 @@ func Load(start string) (*Resolved, error) {
 	r.ModelDir = absOr(r.SpecsRoot, f.ModelDir, "model")
 	r.BaselinesFile = absOr(r.SpecsRoot, f.BaselinesFile, filepath.Join("model", "baselines", "repo-baseline.md"))
 
-	// Resolve style config: style_config > tools_dir fallback.
+	// Resolve style config: style_config > framework_dir fallback.
 	if f.StyleConfig != "" {
 		r.StyleConfig = absRelTo(r.SpecsRoot, f.StyleConfig)
-	} else if r.ToolsDir != "" {
-		r.StyleConfig = filepath.Join(r.ToolsDir, "lint", "style.yaml")
+	} else if r.FrameworkDir != "" {
+		r.StyleConfig = filepath.Join(r.FrameworkDir, "lint", "style.yaml")
 	}
 
 	r.MinSpecsVersion = f.MinSpecsVersion
@@ -272,22 +271,20 @@ func isSubmodule(hostRoot, child string) bool {
 	return false
 }
 
-// resolveToolsDir resolves the tools_dir setting to an absolute path and
-// detects the content mode. Recognised values for raw:
-//   - "auto": try <specsRoot>/.specs-framework, then <specsRoot>/.specs-tools,
-//     then the same two names under <hostRoot>.
+// resolveFrameworkDir resolves the framework_dir setting to an absolute path
+// and detects the content mode. Recognised values for raw:
+//   - "auto": try <specsRoot>/.specs-framework, then the same name under
+//     <hostRoot>.
 //   - absolute or relative path: anchored to specsRoot.
-func resolveToolsDir(raw, specsRoot, hostRoot string) (string, ToolsMode) {
+func resolveFrameworkDir(raw, specsRoot, hostRoot string) (string, FrameworkMode) {
 	candidates := []string{}
 	if raw == "" || raw == "auto" {
 		candidates = append(candidates,
-			filepath.Join(specsRoot, defaultToolsDirName),
-			filepath.Join(specsRoot, legacyToolsDirName),
+			filepath.Join(specsRoot, defaultFrameworkDirName),
 		)
 		if hostRoot != "" && hostRoot != specsRoot {
 			candidates = append(candidates,
-				filepath.Join(hostRoot, defaultToolsDirName),
-				filepath.Join(hostRoot, legacyToolsDirName),
+				filepath.Join(hostRoot, defaultFrameworkDirName),
 			)
 		}
 	} else {
@@ -298,22 +295,22 @@ func resolveToolsDir(raw, specsRoot, hostRoot string) (string, ToolsMode) {
 		if err != nil || !st.IsDir() {
 			continue
 		}
-		return p, detectToolsMode(p, hostRoot)
+		return p, detectFrameworkMode(p, hostRoot)
 	}
-	return "", ToolsModeMissing
+	return "", FrameworkModeMissing
 }
 
-func detectToolsMode(toolsDir, hostRoot string) ToolsMode {
+func detectFrameworkMode(frameworkDir, hostRoot string) FrameworkMode {
 	// .git file or dir present?
-	gitPath := filepath.Join(toolsDir, ".git")
+	gitPath := filepath.Join(frameworkDir, ".git")
 	if st, err := os.Stat(gitPath); err == nil {
 		_ = st
-		if hostRoot != "" && isSubmodule(hostRoot, toolsDir) {
-			return ToolsModeSubmodule
+		if hostRoot != "" && isSubmodule(hostRoot, frameworkDir) {
+			return FrameworkModeSubmodule
 		}
-		return ToolsModeFolder
+		return FrameworkModeFolder
 	}
-	return ToolsModeVendor
+	return FrameworkModeVendor
 }
 
 // absRelTo returns p resolved to absolute, anchored on base if relative.

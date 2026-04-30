@@ -50,68 +50,68 @@ func cmdToolsUpdate(args []string) error {
 		return err
 	}
 
-	switch cfg.ToolsMode {
-	case config.ToolsModeManaged:
+	switch cfg.FrameworkMode {
+	case config.FrameworkModeManaged:
 		return updateManaged(cfg, *to)
 	}
 
-	if cfg.ToolsDir == "" {
-		return exitWith(1, "tools_dir not found; run `specs bootstrap` (managed) or set tools_dir (dev)")
+	if cfg.FrameworkDir == "" {
+		return exitWith(1, "framework_dir not found; run `specs bootstrap` (managed) or set framework_dir (dev)")
 	}
 
-	switch cfg.ToolsMode {
-	case config.ToolsModeSubmodule, config.ToolsModeFolder:
-		if err := runGit(cfg.ToolsDir, "fetch", "--tags"); err != nil {
+	switch cfg.FrameworkMode {
+	case config.FrameworkModeSubmodule, config.FrameworkModeFolder:
+		if err := runGit(cfg.FrameworkDir, "fetch", "--tags"); err != nil {
 			return err
 		}
 		if *to != "" {
-			if err := runGit(cfg.ToolsDir, "checkout", *to); err != nil {
+			if err := runGit(cfg.FrameworkDir, "checkout", *to); err != nil {
 				return err
 			}
 		} else {
 			// pull on current branch; if detached, this is a no-op-ish error
 			// that we report but do not fail on.
-			_ = runGit(cfg.ToolsDir, "pull", "--ff-only")
+			_ = runGit(cfg.FrameworkDir, "pull", "--ff-only")
 		}
-		if cfg.ToolsMode == config.ToolsModeSubmodule && cfg.HostRoot != "" {
-			rel, _ := filepath.Rel(cfg.HostRoot, cfg.ToolsDir)
+		if cfg.FrameworkMode == config.FrameworkModeSubmodule && cfg.HostRoot != "" {
+			rel, _ := filepath.Rel(cfg.HostRoot, cfg.FrameworkDir)
 			_ = runGit(cfg.HostRoot, "add", rel)
 			fmt.Println("staged submodule pointer in host; remember to commit.")
 		}
 		return nil
-	case config.ToolsModeVendor:
-		return exitWith(2, "tools_mode=vendor: re-run `specs bootstrap --tools-mode vendor --tools-ref <ref>` to refresh")
-	case config.ToolsModeMissing:
-		return exitWith(1, "tools_dir is missing on disk; run `specs bootstrap`")
+	case config.FrameworkModeVendor:
+		return exitWith(2, "framework_mode=vendor: re-run `specs bootstrap --framework-mode vendor --framework-ref <ref>` to refresh")
+	case config.FrameworkModeMissing:
+		return exitWith(1, "framework_dir is missing on disk; run `specs bootstrap`")
 	default:
-		return exitWith(1, "unknown tools_mode %q", cfg.ToolsMode)
+		return exitWith(1, "unknown framework_mode %q", cfg.FrameworkMode)
 	}
 }
 
 // updateManaged fetches the requested ref into the user cache and rewrites
-// tools_ref in .specs.yaml so subsequent invocations resolve to it.
+// framework_ref in .specs.yaml so subsequent invocations resolve to it.
 func updateManaged(cfg *config.Resolved, to string) error {
 	ref := to
 	if ref == "" {
-		ref = cfg.ToolsRef
+		ref = cfg.FrameworkRef
 	}
 	if ref == "" {
 		ref = "main"
 	}
-	path, err := tools.Ensure(cfg.ToolsURL, ref)
+	path, err := tools.Ensure(cfg.FrameworkURL, ref)
 	if err != nil {
-		return exitWith(1, "fetch %s@%s: %v", cfg.ToolsURL, ref, err)
+		return exitWith(1, "fetch %s@%s: %v", cfg.FrameworkURL, ref, err)
 	}
-	fmt.Printf("managed tools cached at %s\n", path)
+	fmt.Printf("managed framework cached at %s\n", path)
 
-	// Rewrite tools_ref in .specs.yaml only when the caller pinned a new ref.
-	if to != "" && to != cfg.ToolsRef && cfg.ConfigPath != "" && cfg.Source != nil {
+	// Rewrite framework_ref in .specs.yaml only when the caller pinned a new ref.
+	if to != "" && to != cfg.FrameworkRef && cfg.ConfigPath != "" && cfg.Source != nil {
 		newFile := *cfg.Source
-		newFile.ToolsRef = to
+		newFile.FrameworkRef = to
 		if err := config.Save(cfg.ConfigPath, &newFile); err != nil {
 			return exitWith(1, "write %s: %v", cfg.ConfigPath, err)
 		}
-		fmt.Printf("updated %s: tools_ref=%s\n", cfg.ConfigPath, to)
+		fmt.Printf("updated %s: framework_ref=%s\n", cfg.ConfigPath, to)
 	}
 	return nil
 }

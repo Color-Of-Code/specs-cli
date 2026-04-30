@@ -2,8 +2,8 @@
 
 ## Summary
 
-Print the engine version, resolved specs root, host repo, tools dir,
-tools mode, and any version-drift warnings between the binary and the
+Print the engine version, resolved specs root, host repo, framework dir,
+framework mode, and any version-drift warnings between the binary and the
 framework content.
 
 ## Purpose
@@ -27,5 +27,5 @@ running binary). Otherwise zero, with warnings printed to stderr.
 ## Iteration
 
 When `doctor` flags drift, fix forward: bump the engine, run
-[`specs tools update`](update-tools-layer.md), or correct
+[`specs tools update`](update-framework.md), or correct
 `.specs.yaml`, then re-run `specs doctor` until clean.

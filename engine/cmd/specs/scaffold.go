@@ -60,20 +60,20 @@ func cmdScaffold(args []string) error {
 	if cfg.SpecsRoot == "" {
 		return exitWith(2, "could not determine specs root")
 	}
-	if cfg.ToolsMode == config.ToolsModeManaged {
-		if _, err := tools.Ensure(cfg.ToolsURL, cfg.ToolsRef); err != nil {
-			return exitWith(1, "fetch managed tools: %v", err)
+	if cfg.FrameworkMode == config.FrameworkModeManaged {
+		if _, err := tools.Ensure(cfg.FrameworkURL, cfg.FrameworkRef); err != nil {
+			return exitWith(1, "fetch managed framework: %v", err)
 		}
 	}
-	if cfg.ToolsDir == "" {
-		return exitWith(1, "tools dir not available; run `specs bootstrap` or set tools_dir/tools_url")
+	if cfg.FrameworkDir == "" {
+		return exitWith(1, "framework dir not available; run `specs bootstrap` or set framework_dir/framework_url")
 	}
 
 	tplName, dirName, ok := scaffoldKindMap(kind)
 	if !ok {
 		return exitWith(2, "unknown kind %q (want: requirement|feature|component|api|service)", kind)
 	}
-	tplPath := filepath.Join(cfg.ToolsDir, "templates", tplName)
+	tplPath := filepath.Join(cfg.FrameworkDir, "templates", tplName)
 	if _, err := os.Stat(tplPath); err != nil {
 		return exitWith(1, "template %s not found: %v", tplPath, err)
 	}
@@ -258,13 +258,13 @@ func cmdCRNew(args []string) error {
 	if err != nil {
 		return err
 	}
-	if cfg.ToolsMode == config.ToolsModeManaged {
-		if _, err := tools.Ensure(cfg.ToolsURL, cfg.ToolsRef); err != nil {
-			return exitWith(1, "fetch managed tools: %v", err)
+	if cfg.FrameworkMode == config.FrameworkModeManaged {
+		if _, err := tools.Ensure(cfg.FrameworkURL, cfg.FrameworkRef); err != nil {
+			return exitWith(1, "fetch managed framework: %v", err)
 		}
 	}
-	if cfg.ToolsDir == "" {
-		return exitWith(1, "tools dir not available")
+	if cfg.FrameworkDir == "" {
+		return exitWith(1, "framework dir not available")
 	}
 
 	normID := *id
@@ -280,7 +280,7 @@ func cmdCRNew(args []string) error {
 		}
 	}
 
-	srcTree := filepath.Join(cfg.ToolsDir, "templates", "change-request")
+	srcTree := filepath.Join(cfg.FrameworkDir, "templates", "change-request")
 	if _, err := os.Stat(srcTree); err != nil {
 		return exitWith(1, "template tree %s not found: %v", srcTree, err)
 	}

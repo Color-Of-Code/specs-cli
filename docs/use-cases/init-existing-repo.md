@@ -16,12 +16,12 @@ source, and make the engine commands runnable from the repo root.
 
 `specs init [--at <path>] [--force] [--with-vscode]
 [--framework <name>]
-[--tools-url <URL> --tools-ref <ref> | --tools-dir <dir>]`
+[--framework-url <URL> --framework-ref <ref> | --framework-dir <dir>]`
 
 Or VS Code palette: **Specs: Init host**.
 
 Pre-conditions: the target directory exists; no `.specs.yaml` is present
-unless `--force` is passed; `--tools-url` and `--tools-dir` are not
+unless `--force` is passed; `--framework-url` and `--framework-dir` are not
 combined.
 
 ## Exit point
@@ -33,7 +33,7 @@ source, plus `.vscode/tasks.json` when `--with-vscode` is set. Existing
 ## Workflow
 
 1. Pick the framework source: a `--framework <name>` registry entry, an
-   explicit `--tools-url`/`--tools-ref`, or `--tools-dir` for a local
+   explicit `--framework-url`/`--framework-ref`, or `--framework-dir` for a local
    checkout. With no flag the registry's `default` entry wins.
 2. Run `specs init` from the repo root.
 3. Run [`specs doctor`](diagnose-environment.md) to verify resolved
@@ -44,5 +44,5 @@ source, plus `.vscode/tasks.json` when `--with-vscode` is set. Existing
 ### Iteration
 
 Re-run `specs init --force` to overwrite the configuration, or edit
-`.specs.yaml` manually for individual key changes (tools mode, repo
+`.specs.yaml` manually for individual key changes (framework mode, repo
 mappings, lint config path).

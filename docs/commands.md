@@ -6,10 +6,10 @@ Every command below is reachable both as `specs <command>` on the terminal and f
 
 - `specs version` (or `--version`) — print the installed binary version.
 - `specs doctor` — diagnose environment, layout, and version drift.
-- `specs init [--at <path>] [--force] [--with-vscode] [--framework <name>] [--tools-url <URL> --tools-ref <ref> | --tools-dir <dir>]`
-  Configure an existing host (writes `.specs.yaml`). With no source flags the engine resolves the registry's `default` entry; otherwise the explicit flags win. `--tools-url` and `--tools-dir` are mutually exclusive.
-- `specs bootstrap [--at <path>] [--layout folder|submodule] [--specs-url <URL>] [--specs-ref <ref>] [--tools-mode managed|submodule|folder|vendor] [--framework <name> | --tools-url <URL> --tools-ref <ref>] [--with-model] [--with-vscode] [--dry-run]`
-  Scaffold a new host. `managed` is the default tools mode. `--layout submodule` requires `--specs-url`. Path-based registry entries are not supported here — use `specs init --framework <name>` on an existing host instead.
+- `specs init [--at <path>] [--force] [--with-vscode] [--framework <name>] [--framework-url <URL> --framework-ref <ref> | --framework-dir <dir>]`
+  Configure an existing host (writes `.specs.yaml`). With no source flags the engine resolves the registry's `default` entry; otherwise the explicit flags win. `--framework-url` and `--framework-dir` are mutually exclusive.
+- `specs bootstrap [--at <path>] [--layout folder|submodule] [--specs-url <URL>] [--specs-ref <ref>] [--framework-mode managed|submodule|folder|vendor] [--framework <name> | --framework-url <URL> --framework-ref <ref>] [--with-model] [--with-vscode] [--dry-run]`
+  Scaffold a new host. `managed` is the default framework mode. `--layout submodule` requires `--specs-url`. Path-based registry entries are not supported here — use `specs init --framework <name>` on an existing host instead.
 - `specs lint [--all] [--links] [--style] [--baselines]` — run lint checks. With no flag, all checks run.
 - `specs format [--check] [--at <path>] [files...]` — format markdown files in place; `--check` exits non-zero if any file would change.
 - `specs tools update [--to <ref>]` — update the `.specs-framework` content layer.
@@ -50,6 +50,6 @@ The command fails if the target directory already exists and is non-empty. After
 
 1. Running `git init` in the output directory.
 2. Pushing it to a git remote for team use.
-3. Registering it in the framework registry (or using `--tools-url` directly).
+3. Registering it in the framework registry (or using `--framework-url` directly).
 
 This is an **advanced** operation intended for organisations that need a bespoke framework rather than forking an existing one.

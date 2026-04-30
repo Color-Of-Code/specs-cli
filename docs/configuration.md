@@ -5,8 +5,8 @@ Lives next to the specs root.
 ## Managed mode (recommended default)
 
 ```yaml
-tools_url: https://github.com/Color-Of-Code/specs-framework.git
-tools_ref: v1.0.0 # tag, branch, or commit SHA
+framework_url: https://github.com/Color-Of-Code/specs-framework.git
+framework_ref: v1.0.0 # tag, branch, or commit SHA
 min_specs_version: 0.1.0
 repos:
   redmine: container/redmine/redmine
@@ -15,17 +15,17 @@ repos:
 
 ## Dev mode
 
-Drop `tools_url` / `tools_ref` and point at a checkout instead:
+Drop `framework_url` / `framework_ref` and point at a checkout instead:
 
 ```yaml
-tools_dir: ../specs-framework # or .specs-framework (submodule/folder), or absolute path
+framework_dir: ../specs-framework # or .specs-framework (submodule/folder), or absolute path
 min_specs_version: 0.1.0
 repos: ...
 ```
 
 ## Using a named framework
 
-When a [framework registry](#framework-registry) is configured, the toolchain resolves `tools_url`/`tools_ref` (or `tools_dir`) from the named entry. The `.specs.yaml` still stores the resolved values — the registry is only consulted at `init`/`bootstrap` time.
+When a [framework registry](#framework-registry) is configured, the toolchain resolves `framework_url`/`framework_ref` (or `framework_dir`) from the named entry. The `.specs.yaml` still stores the resolved values — the registry is only consulted at `init`/`bootstrap` time.
 
 ## Optional knobs
 
@@ -41,7 +41,7 @@ Defaults are sensible; only set these when overriding.
 
 ### `style.yaml` schema
 
-The `style.yaml` file controls markdown style checking with abstract, tool-independent rule names. If no `style_config` is set, the toolchain looks for `<tools_dir>/lint/style.yaml`, falling back to compiled-in defaults.
+The `style.yaml` file controls markdown style checking with abstract, tool-independent rule names. If no `style_config` is set, the toolchain looks for `<framework_dir>/lint/style.yaml`, falling back to compiled-in defaults.
 
 ```yaml
 rules:
@@ -102,7 +102,7 @@ frameworks:
 
 When `specs init` or `specs bootstrap` determine which framework to use:
 
-1. Explicit `--tools-url` / `--tools-dir` flags (highest priority).
+1. Explicit `--framework-url` / `--framework-dir` flags (highest priority).
 2. `--framework <name>` flag — looked up in the registry.
 3. The `default` registry entry (if it exists and no flags override).
 4. Hard-coded fallback: `https://github.com/Color-Of-Code/specs-framework.git@main`.

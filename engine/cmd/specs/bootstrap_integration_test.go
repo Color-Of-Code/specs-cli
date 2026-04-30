@@ -61,7 +61,7 @@ func runSpecs(t *testing.T, bin, cwd string, args ...string) (stdout, stderr str
 func TestBootstrap_LayoutFolder_ToolsManaged(t *testing.T) {
 	bin := buildBinary(t)
 	host := t.TempDir()
-	out, _, code := runSpecs(t, bin, host, "bootstrap", "--at", "specs", "--layout", "folder", "--tools-mode", "managed", "--dry-run")
+	out, _, code := runSpecs(t, bin, host, "bootstrap", "--at", "specs", "--layout", "folder", "--framework-mode", "managed", "--dry-run")
 	if code != 0 {
 		t.Fatalf("exit %d\n%s", code, out)
 	}
@@ -75,7 +75,7 @@ func TestBootstrap_LayoutFolder_ToolsManaged(t *testing.T) {
 func TestBootstrap_LayoutFolder_ToolsSubmodule(t *testing.T) {
 	bin := buildBinary(t)
 	host := t.TempDir()
-	out, _, code := runSpecs(t, bin, host, "bootstrap", "--at", "specs", "--layout", "folder", "--tools-mode", "submodule", "--dry-run")
+	out, _, code := runSpecs(t, bin, host, "bootstrap", "--at", "specs", "--layout", "folder", "--framework-mode", "submodule", "--dry-run")
 	if code != 0 {
 		t.Fatalf("exit %d\n%s", code, out)
 	}
@@ -87,7 +87,7 @@ func TestBootstrap_LayoutFolder_ToolsSubmodule(t *testing.T) {
 func TestBootstrap_LayoutFolder_ToolsVendor(t *testing.T) {
 	bin := buildBinary(t)
 	host := t.TempDir()
-	out, _, code := runSpecs(t, bin, host, "bootstrap", "--at", "specs", "--layout", "folder", "--tools-mode", "vendor", "--dry-run")
+	out, _, code := runSpecs(t, bin, host, "bootstrap", "--at", "specs", "--layout", "folder", "--framework-mode", "vendor", "--dry-run")
 	if code != 0 {
 		t.Fatalf("exit %d\n%s", code, out)
 	}
@@ -118,7 +118,7 @@ func TestBootstrap_LayoutSubmodule_DryRun(t *testing.T) {
 	out, _, code := runSpecs(t, bin, host, "bootstrap",
 		"--at", "specs", "--layout", "submodule",
 		"--specs-url", "https://example.com/specs.git",
-		"--tools-mode", "managed",
+		"--framework-mode", "managed",
 		"--dry-run")
 	if code != 0 {
 		t.Fatalf("exit %d\n%s", code, out)
@@ -140,14 +140,14 @@ func TestBootstrap_UnknownLayout(t *testing.T) {
 	}
 }
 
-func TestBootstrap_UnknownToolsMode(t *testing.T) {
+func TestBootstrap_UnknownFrameworkMode(t *testing.T) {
 	bin := buildBinary(t)
 	host := t.TempDir()
-	_, se, code := runSpecs(t, bin, host, "bootstrap", "--tools-mode", "weird", "--dry-run")
+	_, se, code := runSpecs(t, bin, host, "bootstrap", "--framework-mode", "weird", "--dry-run")
 	if code == 0 {
 		t.Fatalf("expected non-zero exit for unknown tools-mode")
 	}
-	if !strings.Contains(se, "unknown --tools-mode") {
+	if !strings.Contains(se, "unknown --framework-mode") {
 		t.Errorf("expected unknown-tools-mode error: %s", se)
 	}
 }

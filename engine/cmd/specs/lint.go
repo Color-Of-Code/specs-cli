@@ -36,9 +36,9 @@ func cmdLint(args []string) error {
 	}
 
 	// Managed mode: fetch into the user cache on first use.
-	if cfg.ToolsMode == config.ToolsModeManaged {
-		if _, err := tools.Ensure(cfg.ToolsURL, cfg.ToolsRef); err != nil {
-			return exitWith(1, "fetch managed tools: %v", err)
+	if cfg.FrameworkMode == config.FrameworkModeManaged {
+		if _, err := tools.Ensure(cfg.FrameworkURL, cfg.FrameworkRef); err != nil {
+			return exitWith(1, "fetch managed framework: %v", err)
 		}
 	}
 

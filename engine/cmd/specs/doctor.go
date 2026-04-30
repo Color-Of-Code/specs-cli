@@ -24,18 +24,18 @@ type doctorJSON struct {
 	SpecsRoot         string            `json:"specs_root"`
 	HostRoot          string            `json:"host_root"`
 	SpecsMode         string            `json:"specs_mode"`
-	ToolsDir          string            `json:"tools_dir"`
-	ToolsMode         string            `json:"tools_mode"`
-	ToolsURL          string            `json:"tools_url,omitempty"`
-	ToolsRef          string            `json:"tools_ref,omitempty"`
-	ToolsRev          string            `json:"tools_rev,omitempty"`
+	FrameworkDir      string            `json:"framework_dir"`
+	FrameworkMode     string            `json:"framework_mode"`
+	FrameworkURL      string            `json:"framework_url,omitempty"`
+	FrameworkRef      string            `json:"framework_ref,omitempty"`
+	FrameworkRev      string            `json:"framework_rev,omitempty"`
 	ModelDir          string            `json:"model_dir"`
 	ChangeRequestsDir string            `json:"change_requests_dir"`
 	BaselinesFile     string            `json:"baselines_file"`
 	StyleConfig       string            `json:"style_config"`
 	MinSpecsVersion   string            `json:"min_specs_version,omitempty"`
 	TemplatesSchema   int               `json:"templates_schema,omitempty"`
-	Manifest          *manifestJSON     `json:"tools_manifest,omitempty"`
+	Manifest          *manifestJSON     `json:"framework_manifest,omitempty"`
 	Repos             map[string]string `json:"repos"`
 	Compatible        bool              `json:"compatible"`
 	CompatibleMessage string            `json:"compatible_message,omitempty"`
@@ -76,22 +76,22 @@ func cmdDoctor(args []string) error {
 	fmt.Printf("specs root:       %s\n", cfg.SpecsRoot)
 	fmt.Printf("host root:        %s\n", cfg.HostRoot)
 	fmt.Printf("specs mode:       %s\n", cfg.SpecsMode)
-	if cfg.ToolsDir != "" {
-		fmt.Printf("tools dir:        %s%s\n", cfg.ToolsDir, existsSuffix(cfg.ToolsDir))
-		fmt.Printf("tools mode:       %s\n", cfg.ToolsMode)
-		if cfg.ToolsMode == config.ToolsModeManaged {
-			fmt.Printf("tools url:        %s\n", cfg.ToolsURL)
-			ref := cfg.ToolsRef
+	if cfg.FrameworkDir != "" {
+		fmt.Printf("framework dir:    %s%s\n", cfg.FrameworkDir, existsSuffix(cfg.FrameworkDir))
+		fmt.Printf("framework mode:   %s\n", cfg.FrameworkMode)
+		if cfg.FrameworkMode == config.FrameworkModeManaged {
+			fmt.Printf("framework url:    %s\n", cfg.FrameworkURL)
+			ref := cfg.FrameworkRef
 			if ref == "" {
 				ref = "(unset; defaults to main on next fetch)"
 			}
-			fmt.Printf("tools ref:        %s\n", ref)
+			fmt.Printf("framework ref:    %s\n", ref)
 		}
-		if rev := gitShortRev(cfg.ToolsDir); rev != "" {
-			fmt.Printf("tools rev:        %s\n", rev)
+		if rev := gitShortRev(cfg.FrameworkDir); rev != "" {
+			fmt.Printf("framework rev:    %s\n", rev)
 		}
 	} else {
-		fmt.Println("tools dir:        <missing> (run `specs bootstrap` or set tools_url/tools_dir)")
+		fmt.Println("framework dir:    <missing> (run `specs bootstrap` or set framework_url/framework_dir)")
 	}
 	fmt.Printf("model dir:        %s\n", cfg.ModelDir)
 	fmt.Printf("change-requests:  %s\n", cfg.ChangeRequestsDir)
@@ -103,13 +103,13 @@ func cmdDoctor(args []string) error {
 	if cfg.TemplatesSchema != 0 {
 		fmt.Printf("templates_schema: %d (host requires)\n", cfg.TemplatesSchema)
 	}
-	if cfg.ToolsDir != "" {
-		if m, err := toolsmanifest.Load(cfg.ToolsDir); err != nil {
-			fmt.Printf("tools manifest:   error: %v\n", err)
+	if cfg.FrameworkDir != "" {
+		if m, err := toolsmanifest.Load(cfg.FrameworkDir); err != nil {
+			fmt.Printf("framework manifest: error: %v\n", err)
 		} else if m == nil {
-			fmt.Println("tools manifest:   <not present>")
+			fmt.Println("framework manifest: <not present>")
 		} else {
-			fmt.Printf("tools manifest:   templates_schema=%d version=%s\n", m.TemplatesSchema, m.Version)
+			fmt.Printf("framework manifest: templates_schema=%d version=%s\n", m.TemplatesSchema, m.Version)
 			if ok, msg := toolsmanifest.Compatible(cfg.TemplatesSchema, m); !ok {
 				return exitWith(1, "%s", msg)
 			}
@@ -198,10 +198,10 @@ func emitDoctorJSON(cfg *config.Resolved) error {
 		SpecsRoot:         cfg.SpecsRoot,
 		HostRoot:          cfg.HostRoot,
 		SpecsMode:         string(cfg.SpecsMode),
-		ToolsDir:          cfg.ToolsDir,
-		ToolsMode:         string(cfg.ToolsMode),
-		ToolsURL:          cfg.ToolsURL,
-		ToolsRef:          cfg.ToolsRef,
+		FrameworkDir:      cfg.FrameworkDir,
+		FrameworkMode:     string(cfg.FrameworkMode),
+		FrameworkURL:      cfg.FrameworkURL,
+		FrameworkRef:      cfg.FrameworkRef,
 		ModelDir:          cfg.ModelDir,
 		ChangeRequestsDir: cfg.ChangeRequestsDir,
 		BaselinesFile:     cfg.BaselinesFile,
@@ -211,11 +211,11 @@ func emitDoctorJSON(cfg *config.Resolved) error {
 		Repos:             repos,
 		Compatible:        true,
 	}
-	if cfg.ToolsDir != "" {
-		if rev := gitShortRev(cfg.ToolsDir); rev != "" {
-			d.ToolsRev = rev
+	if cfg.FrameworkDir != "" {
+		if rev := gitShortRev(cfg.FrameworkDir); rev != "" {
+			d.FrameworkRev = rev
 		}
-		if m, err := toolsmanifest.Load(cfg.ToolsDir); err == nil && m != nil {
+		if m, err := toolsmanifest.Load(cfg.FrameworkDir); err == nil && m != nil {
 			d.Manifest = &manifestJSON{TemplatesSchema: m.TemplatesSchema, Version: m.Version}
 		}
 		if ok, msg := toolsmanifest.Compatible(cfg.TemplatesSchema, d.Manifest.toToolsManifest()); !ok {

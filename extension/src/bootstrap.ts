@@ -7,14 +7,14 @@ interface BootstrapAnswers {
   layout: "folder" | "submodule";
   specsUrl?: string;
   specsRef?: string;
-  toolsMode: "managed" | "submodule" | "folder" | "vendor";
-  toolsUrl: string;
-  toolsRef: string;
+  frameworkMode: "managed" | "submodule" | "folder" | "vendor";
+  frameworkUrl: string;
+  frameworkRef: string;
   withModel: boolean;
   withVscode: boolean;
 }
 
-const DEFAULT_TOOLS_URL = "https://github.com/Color-Of-Code/specs-framework.git";
+const DEFAULT_FRAMEWORK_URL = "https://github.com/Color-Of-Code/specs-framework.git";
 
 export async function runBootstrapWizard(context: vscode.ExtensionContext): Promise<void> {
   const folder = pickFolder();
@@ -46,25 +46,25 @@ export async function runBootstrapWizard(context: vscode.ExtensionContext): Prom
     });
   }
 
-  const toolsMode = await pickToolsMode();
-  if (!toolsMode) {
+  const frameworkMode = await pickFrameworkMode();
+  if (!frameworkMode) {
     return;
   }
 
-  const toolsUrl = await vscode.window.showInputBox({
-    prompt: "Tools content git URL (--tools-url)",
-    value: DEFAULT_TOOLS_URL,
+  const frameworkUrl = await vscode.window.showInputBox({
+    prompt: "Framework content git URL (--framework-url)",
+    value: DEFAULT_FRAMEWORK_URL,
     ignoreFocusOut: true,
   });
-  if (toolsUrl === undefined) {
+  if (frameworkUrl === undefined) {
     return;
   }
-  const toolsRef = await vscode.window.showInputBox({
-    prompt: "Tools content ref (--tools-ref)",
+  const frameworkRef = await vscode.window.showInputBox({
+    prompt: "Framework content ref (--framework-ref)",
     value: "main",
     ignoreFocusOut: true,
   });
-  if (toolsRef === undefined) {
+  if (frameworkRef === undefined) {
     return;
   }
 
@@ -89,9 +89,9 @@ export async function runBootstrapWizard(context: vscode.ExtensionContext): Prom
     layout,
     specsUrl,
     specsRef,
-    toolsMode,
-    toolsUrl,
-    toolsRef,
+    frameworkMode,
+    frameworkUrl,
+    frameworkRef,
     withModel,
     withVscode,
   };
@@ -134,12 +134,12 @@ function buildArgs(a: BootstrapAnswers): string[] {
       args.push("--specs-ref", a.specsRef);
     }
   }
-  args.push("--tools-mode", a.toolsMode);
-  if (a.toolsUrl) {
-    args.push("--tools-url", a.toolsUrl);
+  args.push("--framework-mode", a.frameworkMode);
+  if (a.frameworkUrl) {
+    args.push("--framework-url", a.frameworkUrl);
   }
-  if (a.toolsRef) {
-    args.push("--tools-ref", a.toolsRef);
+  if (a.frameworkRef) {
+    args.push("--framework-ref", a.frameworkRef);
   }
   if (a.withModel) {
     args.push("--with-model");
@@ -189,7 +189,7 @@ async function pickLayout(): Promise<BootstrapAnswers["layout"] | undefined> {
   return pick.label === "Submodule" ? "submodule" : "folder";
 }
 
-async function pickToolsMode(): Promise<BootstrapAnswers["toolsMode"] | undefined> {
+async function pickFrameworkMode(): Promise<BootstrapAnswers["frameworkMode"] | undefined> {
   const items: vscode.QuickPickItem[] = [
     {
       label: "managed",
@@ -206,5 +206,5 @@ async function pickToolsMode(): Promise<BootstrapAnswers["toolsMode"] | undefine
   if (!pick) {
     return undefined;
   }
-  return pick.label as BootstrapAnswers["toolsMode"];
+  return pick.label as BootstrapAnswers["frameworkMode"];
 }

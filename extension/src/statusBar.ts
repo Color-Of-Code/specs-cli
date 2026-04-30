@@ -1,4 +1,4 @@
-// Status bar item showing current CR slug or tools_dir SHA.
+// Status bar item showing current CR slug or framework_dir SHA.
 import * as cp from "child_process";
 import * as vscode from "vscode";
 import { runAndCapture, findSpecsFolder, findSpecsRoot } from "./engine";
@@ -6,8 +6,8 @@ import { runAndCapture, findSpecsFolder, findSpecsRoot } from "./engine";
 interface DoctorJSON {
   version: string;
   specs_root: string;
-  tools_dir: string;
-  tools_rev?: string;
+  framework_dir: string;
+  framework_rev?: string;
   templates_schema?: number;
   compatible: boolean;
   compatible_message?: string;
@@ -40,10 +40,10 @@ export function registerStatusBar(context: vscode.ExtensionContext): void {
       tooltipExtra = `On change-request branch ${branch}`;
     } else {
       const doctor = await loadDoctor(context, cwd);
-      const rev = doctor?.tools_rev ?? "?";
-      label = `$(book) tools@${rev}`;
+      const rev = doctor?.framework_rev ?? "?";
+      label = `$(book) framework@${rev}`;
       if (doctor && !doctor.compatible) {
-        label = `$(warning) tools@${rev}`;
+        label = `$(warning) framework@${rev}`;
         tooltipExtra = doctor.compatible_message ?? "templates_schema mismatch";
       } else if (doctor) {
         tooltipExtra =

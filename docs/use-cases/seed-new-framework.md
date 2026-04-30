@@ -37,4 +37,4 @@ result via [`specs framework add`](manage-framework-registry.md).
 
 Once published, evolve the framework like any other repository.
 Consumers pick up changes via
-[`specs tools update`](update-tools-layer.md).
+[`specs tools update`](update-framework.md).

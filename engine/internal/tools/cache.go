@@ -1,8 +1,8 @@
 // Package tools manages the read-only managed-mode cache of framework
 // content under the user's cache dir (os.UserCacheDir() + /specs-toolchain/tools/<ref>/).
 //
-// The cache is keyed by tools_ref so multiple refs can coexist and several
-// host projects on the same machine share a single checkout per ref.
+// The cache is keyed by framework_ref so multiple refs can coexist and
+// several host projects on the same machine share a single checkout per ref.
 package tools
 
 import (
@@ -44,7 +44,7 @@ func ManagedPath(ref string) (string, error) {
 // cache entry.
 func Ensure(url, ref string) (string, error) {
 	if url == "" {
-		return "", errors.New("tools_url is required for managed mode")
+		return "", errors.New("framework_url is required for managed mode")
 	}
 	if ref == "" {
 		ref = "main"

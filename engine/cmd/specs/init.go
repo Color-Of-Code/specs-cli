@@ -11,40 +11,40 @@ import (
 )
 
 // cmdInit configures an existing host: writes .specs.yaml and (optionally)
-// .vscode/tasks.json. It auto-detects the current specs and tools layout
+// .vscode/tasks.json. It auto-detects the current specs and framework layout
 // rather than prescribing one.
 func cmdInit(args []string) error {
 	fs := flag.NewFlagSet("init", flag.ContinueOnError)
 	force := fs.Bool("force", false, "overwrite an existing .specs.yaml")
 	withVSCode := fs.Bool("with-vscode", false, "also write .vscode/tasks.json")
 	at := fs.String("at", "", "path to specs root (default: auto-detect from CWD)")
-	toolsURL := fs.String("tools-url", "", "set tools_url (managed mode); leave empty to auto-detect a checkout via tools_dir")
-	toolsRef := fs.String("tools-ref", "", "set tools_ref alongside --tools-url")
-	toolsDir := fs.String("tools-dir", "", "set tools_dir (dev mode); mutually exclusive with --tools-url")
-	frameworkName := fs.String("framework", "", "registered framework name (resolved via the registry; lower priority than --tools-url/--tools-dir)")
+	frameworkURL := fs.String("framework-url", "", "set framework_url (managed mode); leave empty to auto-detect a checkout via framework_dir")
+	frameworkRef := fs.String("framework-ref", "", "set framework_ref alongside --framework-url")
+	frameworkDir := fs.String("framework-dir", "", "set framework_dir (dev mode); mutually exclusive with --framework-url")
+	frameworkName := fs.String("framework", "", "registered framework name (resolved via the registry; lower priority than --framework-url/--framework-dir)")
 	fs.Usage = func() {
-		fmt.Fprintln(os.Stderr, "Usage: specs init [--force] [--with-vscode] [--at <path>] [--framework <name>] [--tools-url URL --tools-ref REF | --tools-dir DIR]")
+		fmt.Fprintln(os.Stderr, "Usage: specs init [--force] [--with-vscode] [--at <path>] [--framework <name>] [--framework-url URL --framework-ref REF | --framework-dir DIR]")
 		fs.PrintDefaults()
 	}
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
 
-	if *toolsURL != "" && *toolsDir != "" {
-		return exitWith(2, "--tools-url and --tools-dir are mutually exclusive")
+	if *frameworkURL != "" && *frameworkDir != "" {
+		return exitWith(2, "--framework-url and --framework-dir are mutually exclusive")
 	}
 
 	// Resolve --framework if no explicit URL/dir was given. When --framework
 	// is empty and neither flag was set, fall back to a registered "default"
 	// entry if it exists.
-	if *toolsURL == "" && *toolsDir == "" {
+	if *frameworkURL == "" && *frameworkDir == "" {
 		name := *frameworkName
 		if name == "" {
 			name = "default"
 		}
 		entry, err := lookupFramework(name)
 		if err == nil {
-			applyEntryToFlags(entry, toolsURL, toolsRef, toolsDir)
+			applyEntryToFlags(entry, frameworkURL, frameworkRef, frameworkDir)
 		} else if *frameworkName != "" {
 			// Explicit name but missing entry: surface the error.
 			return err
@@ -66,13 +66,13 @@ func cmdInit(args []string) error {
 		MinSpecsVersion: Version,
 	}
 	switch {
-	case *toolsURL != "":
-		f.ToolsURL = *toolsURL
-		f.ToolsRef = *toolsRef
-	case *toolsDir != "":
-		f.ToolsDir = *toolsDir
+	case *frameworkURL != "":
+		f.FrameworkURL = *frameworkURL
+		f.FrameworkRef = *frameworkRef
+	case *frameworkDir != "":
+		f.FrameworkDir = *frameworkDir
 	default:
-		f.ToolsDir = "auto"
+		f.FrameworkDir = "auto"
 	}
 	// Preserve any existing repos map / overrides if .specs.yaml already exists.
 	if cfg.Source != nil {
@@ -88,12 +88,12 @@ func cmdInit(args []string) error {
 		if cfg.Source.BaselinesFile != "" {
 			f.BaselinesFile = cfg.Source.BaselinesFile
 		}
-		// If we weren't told to set tools_url/tools_dir, preserve any
+		// If we weren't told to set framework_url/framework_dir, preserve any
 		// pre-existing pin from the existing file.
-		if *toolsURL == "" && *toolsDir == "" && cfg.Source.ToolsURL != "" {
-			f.ToolsURL = cfg.Source.ToolsURL
-			f.ToolsRef = cfg.Source.ToolsRef
-			f.ToolsDir = ""
+		if *frameworkURL == "" && *frameworkDir == "" && cfg.Source.FrameworkURL != "" {
+			f.FrameworkURL = cfg.Source.FrameworkURL
+			f.FrameworkRef = cfg.Source.FrameworkRef
+			f.FrameworkDir = ""
 		}
 	}
 	if f.Repos == nil {
@@ -105,7 +105,7 @@ func cmdInit(args []string) error {
 	if err := config.Save(cfgPath, f); err != nil {
 		return err
 	}
-	fmt.Printf("wrote %s (specs_mode=%s, tools_mode=%s)\n", cfgPath, cfg.SpecsMode, cfg.ToolsMode)
+	fmt.Printf("wrote %s (specs_mode=%s, framework_mode=%s)\n", cfgPath, cfg.SpecsMode, cfg.FrameworkMode)
 
 	if *withVSCode {
 		if err := writeVSCodeTasks(cfg.HostRoot); err != nil {
@@ -127,17 +127,17 @@ func lookupFramework(name string) (registry.Entry, error) {
 	return reg.Resolve(name)
 }
 
-// applyEntryToFlags writes a registry entry into the *toolsURL / *toolsRef /
-// *toolsDir destinations used by init and bootstrap.
-func applyEntryToFlags(e registry.Entry, toolsURL, toolsRef, toolsDir *string) {
+// applyEntryToFlags writes a registry entry into the *frameworkURL /
+// *frameworkRef / *frameworkDir destinations used by init and bootstrap.
+func applyEntryToFlags(e registry.Entry, frameworkURL, frameworkRef, frameworkDir *string) {
 	if e.URL != "" {
-		*toolsURL = e.URL
+		*frameworkURL = e.URL
 		if e.Ref != "" {
-			*toolsRef = e.Ref
+			*frameworkRef = e.Ref
 		}
 	}
 	if e.Path != "" {
-		*toolsDir = e.Path
+		*frameworkDir = e.Path
 	}
 }
 

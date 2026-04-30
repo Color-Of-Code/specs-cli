@@ -14,66 +14,65 @@ import (
 // framework content. The default mode is `managed`: content is fetched
 // once into the user's cache dir and shared across host projects.
 //
-//	--at .                 makes the cwd itself the specs root
-//	--layout folder        creates specs/ as a plain folder (default)
-//	--layout submodule     register specs/ as a git submodule of the host repo;
-//	                       requires --specs-url
+//	--at .                       makes the cwd itself the specs root
+//	--layout folder              creates specs/ as a plain folder (default)
+//	--layout submodule           register specs/ as a git submodule of the host repo;
+//	                             requires --specs-url
 //
-//	--tools-mode managed   (default) fetch into the user cache, hide it
-//	--tools-mode submodule add .specs-framework as a submodule of the host
-//	--tools-mode folder    clone .specs-framework next to specs root
-//	--tools-mode vendor    snapshot .specs-framework (no .git)
+//	--framework-mode managed     (default) fetch into the user cache, hide it
+//	--framework-mode submodule   add .specs-framework as a submodule of the host
+//	--framework-mode folder      clone .specs-framework next to specs root
+//	--framework-mode vendor      snapshot .specs-framework (no .git)
 func cmdBootstrap(args []string) error {
 	fs := flag.NewFlagSet("bootstrap", flag.ContinueOnError)
 	at := fs.String("at", "", "path to the specs root (created if missing); use '.' for repo root")
 	layout := fs.String("layout", "folder", "how specs/ is materialised: submodule|folder")
 	specsURL := fs.String("specs-url", "", "git URL of the host's specs repo (required for --layout submodule)")
 	specsRef := fs.String("specs-ref", "", "branch/tag for --layout submodule (optional)")
-	toolsMode := fs.String("tools-mode", "managed", "how .specs-framework is materialised: managed|submodule|folder|vendor")
-	toolsURL := fs.String("tools-url", "https://github.com/Color-Of-Code/specs-framework.git", "git URL of specs-framework content repo")
-	toolsRef := fs.String("tools-ref", "main", "tag/branch/commit for content")
-	frameworkName := fs.String("framework", "", "registered framework name (resolved via the registry; lower priority than --tools-url)")
+	frameworkMode := fs.String("framework-mode", "managed", "how .specs-framework is materialised: managed|submodule|folder|vendor")
+	frameworkURL := fs.String("framework-url", "https://github.com/Color-Of-Code/specs-framework.git", "git URL of specs-framework content repo")
+	frameworkRef := fs.String("framework-ref", "main", "tag/branch/commit for content")
+	frameworkName := fs.String("framework", "", "registered framework name (resolved via the registry; lower priority than --framework-url)")
 	withModel := fs.Bool("with-model", false, "create empty model/ and change-requests/ skeletons")
 	withVSCode := fs.Bool("with-vscode", false, "write .vscode/tasks.json")
 	dryRun := fs.Bool("dry-run", false, "print actions without performing them")
 	fs.Usage = func() {
-		fmt.Fprintln(os.Stderr, "Usage: specs bootstrap [--at <path>] [--layout submodule|folder] [--specs-url URL] [--specs-ref REF] [--tools-mode managed|submodule|folder|vendor] [--framework <name> | --tools-url URL --tools-ref REF] [--with-model] [--with-vscode] [--dry-run]")
+		fmt.Fprintln(os.Stderr, "Usage: specs bootstrap [--at <path>] [--layout submodule|folder] [--specs-url URL] [--specs-ref REF] [--framework-mode managed|submodule|folder|vendor] [--framework <name> | --framework-url URL --framework-ref REF] [--with-model] [--with-vscode] [--dry-run]")
 		fs.PrintDefaults()
 	}
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
 
-	// Resolve --framework. Bootstrap defaults --tools-url to the canonical
+	// Resolve --framework. Bootstrap defaults --framework-url to the canonical
 	// upstream, so a user-supplied --framework should override that default.
 	// We treat the default as "implicit" only when --framework is set.
 	if *frameworkName != "" {
-		if !flagWasSet(fs, "tools-url") {
+		if !flagWasSet(fs, "framework-url") {
 			entry, err := lookupFramework(*frameworkName)
 			if err != nil {
 				return err
 			}
 			if entry.URL != "" {
-				*toolsURL = entry.URL
+				*frameworkURL = entry.URL
 				if entry.Ref != "" {
-					*toolsRef = entry.Ref
+					*frameworkRef = entry.Ref
 				}
 			} else if entry.Path != "" {
-				// Path-based entries imply tools-mode=folder with a pre-existing checkout.
-				// Force tools-mode to "folder" and reuse --tools-url/ref unset by clearing them.
+				// Path-based entries imply framework-mode=folder with a pre-existing checkout.
 				return exitWith(2, "framework %q is path-based; bootstrap requires a remote URL. Use 'specs init --framework %s' on an existing host instead", *frameworkName, *frameworkName)
 			}
 		} else {
-			fmt.Fprintln(os.Stderr, "warning: --framework ignored because --tools-url was set explicitly")
+			fmt.Fprintln(os.Stderr, "warning: --framework ignored because --framework-url was set explicitly")
 		}
-	} else if !flagWasSet(fs, "tools-url") {
-		// No explicit --framework and no explicit --tools-url: try the
+	} else if !flagWasSet(fs, "framework-url") {
+		// No explicit --framework and no explicit --framework-url: try the
 		// registry's "default" entry before falling back to the hard-coded
 		// upstream URL.
 		if entry, err := lookupFramework("default"); err == nil && entry.URL != "" {
-			*toolsURL = entry.URL
+			*frameworkURL = entry.URL
 			if entry.Ref != "" {
-				*toolsRef = entry.Ref
+				*frameworkRef = entry.Ref
 			}
 		}
 	}
@@ -135,17 +134,17 @@ func cmdBootstrap(args []string) error {
 	}
 
 	// Materialise .specs-framework content.
-	toolsDir := filepath.Join(specsRoot, ".specs-framework")
-	switch *toolsMode {
+	frameworkDir := filepath.Join(specsRoot, ".specs-framework")
+	switch *frameworkMode {
 	case "managed":
 		if *dryRun {
-			fmt.Printf("would: fetch %s@%s into managed cache\n", *toolsURL, *toolsRef)
+			fmt.Printf("would: fetch %s@%s into managed cache\n", *frameworkURL, *frameworkRef)
 		} else {
-			path, err := tools.Ensure(*toolsURL, *toolsRef)
+			path, err := tools.Ensure(*frameworkURL, *frameworkRef)
 			if err != nil {
-				return exitWith(1, "fetch managed tools: %v", err)
+				return exitWith(1, "fetch managed framework: %v", err)
 			}
-			fmt.Printf("managed tools cached at %s\n", path)
+			fmt.Printf("managed framework cached at %s\n", path)
 		}
 	case "submodule":
 		// Submodule must be added in the host repo's git root, not below specsRoot
@@ -160,12 +159,12 @@ func cmdBootstrap(args []string) error {
 			}
 			hostGitRoot = cwd
 		}
-		rel, _ := filepath.Rel(hostGitRoot, toolsDir)
+		rel, _ := filepath.Rel(hostGitRoot, frameworkDir)
 		gitArgs := []string{"submodule", "add"}
-		if *toolsRef != "" {
-			gitArgs = append(gitArgs, "-b", *toolsRef)
+		if *frameworkRef != "" {
+			gitArgs = append(gitArgs, "-b", *frameworkRef)
 		}
-		gitArgs = append(gitArgs, *toolsURL, rel)
+		gitArgs = append(gitArgs, *frameworkURL, rel)
 		if err := runOrLog(*dryRun, fmt.Sprintf("git -C %s %v", hostGitRoot, gitArgs), func() error {
 			return runGit(hostGitRoot, gitArgs...)
 		}); err != nil {
@@ -173,10 +172,10 @@ func cmdBootstrap(args []string) error {
 		}
 	case "folder":
 		gitArgs := []string{"clone"}
-		if *toolsRef != "" {
-			gitArgs = append(gitArgs, "--branch", *toolsRef)
+		if *frameworkRef != "" {
+			gitArgs = append(gitArgs, "--branch", *frameworkRef)
 		}
-		gitArgs = append(gitArgs, *toolsURL, toolsDir)
+		gitArgs = append(gitArgs, *frameworkURL, frameworkDir)
 		if err := runOrLog(*dryRun, fmt.Sprintf("git %v", gitArgs), func() error {
 			return runGit("", gitArgs...)
 		}); err != nil {
@@ -185,20 +184,20 @@ func cmdBootstrap(args []string) error {
 	case "vendor":
 		// Vendor: same as folder, but strip the .git directory afterwards.
 		gitArgs := []string{"clone", "--depth", "1"}
-		if *toolsRef != "" {
-			gitArgs = append(gitArgs, "--branch", *toolsRef)
+		if *frameworkRef != "" {
+			gitArgs = append(gitArgs, "--branch", *frameworkRef)
 		}
-		gitArgs = append(gitArgs, *toolsURL, toolsDir)
-		if err := runOrLog(*dryRun, fmt.Sprintf("git %v && rm -rf %s/.git", gitArgs, toolsDir), func() error {
+		gitArgs = append(gitArgs, *frameworkURL, frameworkDir)
+		if err := runOrLog(*dryRun, fmt.Sprintf("git %v && rm -rf %s/.git", gitArgs, frameworkDir), func() error {
 			if err := runGit("", gitArgs...); err != nil {
 				return err
 			}
-			return os.RemoveAll(filepath.Join(toolsDir, ".git"))
+			return os.RemoveAll(filepath.Join(frameworkDir, ".git"))
 		}); err != nil {
 			return err
 		}
 	default:
-		return exitWith(2, "unknown --tools-mode %q", *toolsMode)
+		return exitWith(2, "unknown --framework-mode %q", *frameworkMode)
 	}
 
 	if *withModel {
@@ -212,8 +211,8 @@ func cmdBootstrap(args []string) error {
 
 	// Run init logic to write .specs.yaml in the new specs root.
 	initArgs := []string{"--at", specsRoot, "--force"}
-	if *toolsMode == "managed" {
-		initArgs = append(initArgs, "--tools-url", *toolsURL, "--tools-ref", *toolsRef)
+	if *frameworkMode == "managed" {
+		initArgs = append(initArgs, "--framework-url", *frameworkURL, "--framework-ref", *frameworkRef)
 	}
 	if *withVSCode {
 		initArgs = append(initArgs, "--with-vscode")

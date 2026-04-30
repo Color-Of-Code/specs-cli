@@ -13,11 +13,11 @@ func TestLoad_PlainFolderLayout(t *testing.T) {
 	dir := t.TempDir()
 	host := filepath.Join(dir, "host")
 	specs := filepath.Join(host, "specs")
-	tools := filepath.Join(specs, ".specs-framework")
+	framework := filepath.Join(specs, ".specs-framework")
 	for _, p := range []string{
 		filepath.Join(specs, "model"),
 		filepath.Join(specs, "change-requests"),
-		filepath.Join(tools, "templates"),
+		filepath.Join(framework, "templates"),
 	} {
 		if err := os.MkdirAll(p, 0o755); err != nil {
 			t.Fatal(err)
@@ -41,11 +41,11 @@ func TestLoad_PlainFolderLayout(t *testing.T) {
 	if cfg.SpecsMode != SpecsModeFolder {
 		t.Errorf("SpecsMode=%q want %q", cfg.SpecsMode, SpecsModeFolder)
 	}
-	if cfg.ToolsDir != tools {
-		t.Errorf("ToolsDir=%q want %q", cfg.ToolsDir, tools)
+	if cfg.FrameworkDir != framework {
+		t.Errorf("FrameworkDir=%q want %q", cfg.FrameworkDir, framework)
 	}
-	if cfg.ToolsMode != ToolsModeVendor {
-		t.Errorf("ToolsMode=%q want %q (no .git inside tools dir)", cfg.ToolsMode, ToolsModeVendor)
+	if cfg.FrameworkMode != FrameworkModeVendor {
+		t.Errorf("FrameworkMode=%q want %q (no .git inside framework dir)", cfg.FrameworkMode, FrameworkModeVendor)
 	}
 }
 
@@ -77,7 +77,7 @@ func TestLoad_WithSpecsYAML(t *testing.T) {
 	specs := filepath.Join(dir, "specs")
 	cfgPath := filepath.Join(specs, FileName)
 	in := &File{
-		ToolsDir:        "auto",
+		FrameworkDir:    "auto",
 		MinSpecsVersion: "1.2.3",
 		Repos: map[string]string{
 			"redmine": "container/redmine/redmine",

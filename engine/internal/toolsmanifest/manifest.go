@@ -1,4 +1,4 @@
-// Package toolsmanifest reads tools-manifest.yaml from a tools_dir to
+// Package toolsmanifest reads tools-manifest.yaml from a framework dir to
 // support compatibility checks between the host's pinned templates_schema
 // and the materialised content layer.
 package toolsmanifest
@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// FileName is the canonical name of the manifest at the root of a tools_dir.
+// FileName is the canonical name of the manifest at the root of a framework dir.
 const FileName = "tools-manifest.yaml"
 
 // Manifest mirrors the on-disk schema. Unknown fields are tolerated so the
@@ -53,13 +53,13 @@ func Compatible(requiredSchema int, m *Manifest) (bool, string) {
 		return true, ""
 	}
 	if m == nil {
-		return false, fmt.Sprintf("host pins templates_schema=%d but the tools dir has no %s", requiredSchema, FileName)
+		return false, fmt.Sprintf("host pins templates_schema=%d but the framework dir has no %s", requiredSchema, FileName)
 	}
 	if m.TemplatesSchema == 0 {
 		return false, fmt.Sprintf("host pins templates_schema=%d but %s does not declare templates_schema", requiredSchema, FileName)
 	}
 	if m.TemplatesSchema != requiredSchema {
-		return false, fmt.Sprintf("templates_schema mismatch: host requires %d, tools dir declares %d", requiredSchema, m.TemplatesSchema)
+		return false, fmt.Sprintf("templates_schema mismatch: host requires %d, framework dir declares %d", requiredSchema, m.TemplatesSchema)
 	}
 	return true, ""
 }
