@@ -32,15 +32,50 @@ func cmdBootstrap(args []string) error {
 	toolsMode := fs.String("tools-mode", "managed", "how .specs-framework is materialised: managed|submodule|folder|vendor")
 	toolsURL := fs.String("tools-url", "https://github.com/Color-Of-Code/specs-framework.git", "git URL of specs-framework content repo")
 	toolsRef := fs.String("tools-ref", "main", "tag/branch/commit for content")
+	frameworkName := fs.String("framework", "", "registered framework name (resolved via the registry; lower priority than --tools-url)")
 	withModel := fs.Bool("with-model", false, "create empty model/ and change-requests/ skeletons")
 	withVSCode := fs.Bool("with-vscode", false, "write .vscode/tasks.json")
 	dryRun := fs.Bool("dry-run", false, "print actions without performing them")
 	fs.Usage = func() {
-		fmt.Fprintln(os.Stderr, "Usage: specs bootstrap [--at <path>] [--layout submodule|folder] [--specs-url URL] [--specs-ref REF] [--tools-mode managed|submodule|folder|vendor] [--tools-url URL] [--tools-ref REF] [--with-model] [--with-vscode] [--dry-run]")
+		fmt.Fprintln(os.Stderr, "Usage: specs bootstrap [--at <path>] [--layout submodule|folder] [--specs-url URL] [--specs-ref REF] [--tools-mode managed|submodule|folder|vendor] [--framework <name> | --tools-url URL --tools-ref REF] [--with-model] [--with-vscode] [--dry-run]")
 		fs.PrintDefaults()
 	}
 	if err := fs.Parse(args); err != nil {
 		return err
+	}
+
+	// Resolve --framework. Bootstrap defaults --tools-url to the canonical
+	// upstream, so a user-supplied --framework should override that default.
+	// We treat the default as "implicit" only when --framework is set.
+	if *frameworkName != "" {
+		if !flagWasSet(fs, "tools-url") {
+			entry, err := lookupFramework(*frameworkName)
+			if err != nil {
+				return err
+			}
+			if entry.URL != "" {
+				*toolsURL = entry.URL
+				if entry.Ref != "" {
+					*toolsRef = entry.Ref
+				}
+			} else if entry.Path != "" {
+				// Path-based entries imply tools-mode=folder with a pre-existing checkout.
+				// Force tools-mode to "folder" and reuse --tools-url/ref unset by clearing them.
+				return exitWith(2, "framework %q is path-based; bootstrap requires a remote URL. Use 'specs init --framework %s' on an existing host instead", *frameworkName, *frameworkName)
+			}
+		} else {
+			fmt.Fprintln(os.Stderr, "warning: --framework ignored because --tools-url was set explicitly")
+		}
+	} else if !flagWasSet(fs, "tools-url") {
+		// No explicit --framework and no explicit --tools-url: try the
+		// registry's "default" entry before falling back to the hard-coded
+		// upstream URL.
+		if entry, err := lookupFramework("default"); err == nil && entry.URL != "" {
+			*toolsURL = entry.URL
+			if entry.Ref != "" {
+				*toolsRef = entry.Ref
+			}
+		}
 	}
 
 	cwd, err := os.Getwd()
@@ -221,4 +256,16 @@ func findGitRoot(start string) string {
 		}
 		d = parent
 	}
+}
+
+// flagWasSet reports whether the flag with the given name was supplied
+// on the command line (vs. left at its declared default).
+func flagWasSet(fs *flag.FlagSet, name string) bool {
+	set := false
+	fs.Visit(func(f *flag.Flag) {
+		if f.Name == name {
+			set = true
+		}
+	})
+	return set
 }

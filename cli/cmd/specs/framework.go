@@ -8,19 +8,147 @@ import (
 	"path/filepath"
 
 	"github.com/Color-Of-Code/specs-toolchain/cli/internal/framework"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/registry"
 )
 
 func cmdFramework(args []string) error {
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "Usage: specs framework <seed>")
+		fmt.Fprintln(os.Stderr, "Usage: specs framework <list|add|remove|seed>")
 		return exitWith(2, "missing subcommand")
 	}
 	switch args[0] {
+	case "list":
+		return cmdFrameworkList(args[1:])
+	case "add":
+		return cmdFrameworkAdd(args[1:])
+	case "remove", "rm":
+		return cmdFrameworkRemove(args[1:])
 	case "seed":
 		return cmdFrameworkSeed(args[1:])
+	case "-h", "--help", "help":
+		fmt.Fprintln(os.Stderr, "Usage: specs framework <list|add|remove|seed> [flags]")
+		return nil
 	default:
 		return exitWith(2, "unknown subcommand: specs framework %s", args[0])
 	}
+}
+
+// cmdFrameworkList prints all registered framework entries.
+func cmdFrameworkList(args []string) error {
+	fs2 := flag.NewFlagSet("framework list", flag.ContinueOnError)
+	fs2.Usage = func() { fmt.Fprintln(os.Stderr, "Usage: specs framework list") }
+	if err := fs2.Parse(args); err != nil {
+		return err
+	}
+	reg, err := registry.Load("")
+	if err != nil {
+		return err
+	}
+	names := reg.Names()
+	if len(names) == 0 {
+		path, _ := registry.DefaultPath()
+		fmt.Printf("No frameworks registered (%s does not exist or is empty).\n", path)
+		return nil
+	}
+	for _, n := range names {
+		e := reg.Frameworks[n]
+		switch {
+		case e.URL != "":
+			ref := e.Ref
+			if ref == "" {
+				ref = "main"
+			}
+			fmt.Printf("%s\turl=%s\tref=%s\n", n, e.URL, ref)
+		case e.Path != "":
+			fmt.Printf("%s\tpath=%s\n", n, e.Path)
+		}
+	}
+	return nil
+}
+
+// cmdFrameworkAdd inserts or replaces an entry in the registry.
+func cmdFrameworkAdd(args []string) error {
+	if len(args) == 0 {
+		fmt.Fprintln(os.Stderr, "Usage: specs framework add <name> (--url <URL> [--ref <ref>] | --path <dir>)")
+		return exitWith(2, "missing name")
+	}
+	name := args[0]
+	fs2 := flag.NewFlagSet("framework add", flag.ContinueOnError)
+	url := fs2.String("url", "", "git URL of a remote framework source")
+	ref := fs2.String("ref", "", "tag/branch/commit (only with --url; default 'main')")
+	path := fs2.String("path", "", "local directory path of a framework source")
+	fs2.Usage = func() {
+		fmt.Fprintln(os.Stderr, "Usage: specs framework add <name> (--url <URL> [--ref <ref>] | --path <dir>)")
+		fs2.PrintDefaults()
+	}
+	if err := fs2.Parse(args[1:]); err != nil {
+		return err
+	}
+	entry := registry.Entry{URL: *url, Ref: *ref, Path: *path}
+	if entry.Path != "" {
+		// Expand a leading ~ for convenience and store an absolute path.
+		expanded, err := expandHome(entry.Path)
+		if err != nil {
+			return err
+		}
+		abs, err := filepath.Abs(expanded)
+		if err != nil {
+			return err
+		}
+		entry.Path = abs
+	}
+	if err := entry.Validate(); err != nil {
+		return exitWith(2, "%v", err)
+	}
+	reg, err := registry.Load("")
+	if err != nil {
+		return err
+	}
+	if err := reg.Add(name, entry); err != nil {
+		return err
+	}
+	if err := reg.Save(""); err != nil {
+		return err
+	}
+	regPath, _ := registry.DefaultPath()
+	fmt.Printf("registered %q in %s\n", name, regPath)
+	return nil
+}
+
+// cmdFrameworkRemove deletes an entry from the registry.
+func cmdFrameworkRemove(args []string) error {
+	if len(args) == 0 {
+		fmt.Fprintln(os.Stderr, "Usage: specs framework remove <name>")
+		return exitWith(2, "missing name")
+	}
+	name := args[0]
+	reg, err := registry.Load("")
+	if err != nil {
+		return err
+	}
+	if err := reg.Remove(name); err != nil {
+		return exitWith(1, "%v", err)
+	}
+	if err := reg.Save(""); err != nil {
+		return err
+	}
+	fmt.Printf("removed %q from registry\n", name)
+	return nil
+}
+
+// expandHome expands a leading "~" or "~/" segment to the user's home dir.
+func expandHome(p string) (string, error) {
+	if p == "~" || (len(p) >= 2 && p[:2] == "~/") {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return "", err
+		}
+		if p == "~" {
+			return home, nil
+		}
+		return filepath.Join(home, p[2:]), nil
+	}
+	return p, nil
 }
 
 func cmdFrameworkSeed(args []string) error {

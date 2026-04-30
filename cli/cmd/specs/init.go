@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/Color-Of-Code/specs-toolchain/cli/internal/config"
+	"github.com/Color-Of-Code/specs-toolchain/cli/internal/registry"
 )
 
 // cmdInit configures an existing host: writes .specs.yaml and (optionally)
@@ -19,12 +20,35 @@ func cmdInit(args []string) error {
 	at := fs.String("at", "", "path to specs root (default: auto-detect from CWD)")
 	toolsURL := fs.String("tools-url", "", "set tools_url (managed mode); leave empty to auto-detect a checkout via tools_dir")
 	toolsRef := fs.String("tools-ref", "", "set tools_ref alongside --tools-url")
+	toolsDir := fs.String("tools-dir", "", "set tools_dir (dev mode); mutually exclusive with --tools-url")
+	frameworkName := fs.String("framework", "", "registered framework name (resolved via the registry; lower priority than --tools-url/--tools-dir)")
 	fs.Usage = func() {
-		fmt.Fprintln(os.Stderr, "Usage: specs init [--force] [--with-vscode] [--at <path>] [--tools-url URL --tools-ref REF]")
+		fmt.Fprintln(os.Stderr, "Usage: specs init [--force] [--with-vscode] [--at <path>] [--framework <name>] [--tools-url URL --tools-ref REF | --tools-dir DIR]")
 		fs.PrintDefaults()
 	}
 	if err := fs.Parse(args); err != nil {
 		return err
+	}
+
+	if *toolsURL != "" && *toolsDir != "" {
+		return exitWith(2, "--tools-url and --tools-dir are mutually exclusive")
+	}
+
+	// Resolve --framework if no explicit URL/dir was given. When --framework
+	// is empty and neither flag was set, fall back to a registered "default"
+	// entry if it exists.
+	if *toolsURL == "" && *toolsDir == "" {
+		name := *frameworkName
+		if name == "" {
+			name = "default"
+		}
+		entry, err := lookupFramework(name)
+		if err == nil {
+			applyEntryToFlags(entry, toolsURL, toolsRef, toolsDir)
+		} else if *frameworkName != "" {
+			// Explicit name but missing entry: surface the error.
+			return err
+		}
 	}
 
 	cfg, err := config.Load(*at)
@@ -41,10 +65,13 @@ func cmdInit(args []string) error {
 	f := &config.File{
 		MinSpecsVersion: Version,
 	}
-	if *toolsURL != "" {
+	switch {
+	case *toolsURL != "":
 		f.ToolsURL = *toolsURL
 		f.ToolsRef = *toolsRef
-	} else {
+	case *toolsDir != "":
+		f.ToolsDir = *toolsDir
+	default:
 		f.ToolsDir = "auto"
 	}
 	// Preserve any existing repos map / overrides if .specs.yaml already exists.
@@ -61,9 +88,9 @@ func cmdInit(args []string) error {
 		if cfg.Source.BaselinesFile != "" {
 			f.BaselinesFile = cfg.Source.BaselinesFile
 		}
-		// If we weren't told to set tools_url, preserve any pre-existing
-		// managed-mode pin from the existing file.
-		if *toolsURL == "" && cfg.Source.ToolsURL != "" {
+		// If we weren't told to set tools_url/tools_dir, preserve any
+		// pre-existing pin from the existing file.
+		if *toolsURL == "" && *toolsDir == "" && cfg.Source.ToolsURL != "" {
 			f.ToolsURL = cfg.Source.ToolsURL
 			f.ToolsRef = cfg.Source.ToolsRef
 			f.ToolsDir = ""
@@ -87,6 +114,31 @@ func cmdInit(args []string) error {
 		fmt.Println("wrote .vscode/tasks.json")
 	}
 	return nil
+}
+
+// lookupFramework resolves a registered framework name, falling back to the
+// "default" entry when name is empty. Returns os.ErrNotExist (wrapped) when
+// the entry is missing.
+func lookupFramework(name string) (registry.Entry, error) {
+	reg, err := registry.Load("")
+	if err != nil {
+		return registry.Entry{}, err
+	}
+	return reg.Resolve(name)
+}
+
+// applyEntryToFlags writes a registry entry into the *toolsURL / *toolsRef /
+// *toolsDir destinations used by init and bootstrap.
+func applyEntryToFlags(e registry.Entry, toolsURL, toolsRef, toolsDir *string) {
+	if e.URL != "" {
+		*toolsURL = e.URL
+		if e.Ref != "" {
+			*toolsRef = e.Ref
+		}
+	}
+	if e.Path != "" {
+		*toolsDir = e.Path
+	}
 }
 
 const vscodeTasksJSON = `{
