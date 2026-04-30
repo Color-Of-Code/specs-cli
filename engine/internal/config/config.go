@@ -33,11 +33,9 @@ const (
 type FrameworkMode string
 
 const (
-	FrameworkModeManaged   FrameworkMode = "managed" // engine-managed read-only checkout in the user cache dir
-	FrameworkModeSubmodule FrameworkMode = "submodule"
-	FrameworkModeFolder    FrameworkMode = "folder" // plain folder; may or may not be a git working tree
-	FrameworkModeVendor    FrameworkMode = "vendor" // vendored snapshot (no .git)
-	FrameworkModeMissing   FrameworkMode = "missing"
+	FrameworkModeManaged FrameworkMode = "managed" // engine-fetched checkout in the user cache dir
+	FrameworkModeLocal   FrameworkMode = "local"   // host-managed directory on disk (plain folder, submodule, or vendored snapshot)
+	FrameworkModeMissing FrameworkMode = "missing"
 )
 
 // File is the on-disk schema for .specs.yaml. Unknown fields are tolerated
@@ -295,22 +293,9 @@ func resolveFrameworkDir(raw, specsRoot, hostRoot string) (string, FrameworkMode
 		if err != nil || !st.IsDir() {
 			continue
 		}
-		return p, detectFrameworkMode(p, hostRoot)
+		return p, FrameworkModeLocal
 	}
 	return "", FrameworkModeMissing
-}
-
-func detectFrameworkMode(frameworkDir, hostRoot string) FrameworkMode {
-	// .git file or dir present?
-	gitPath := filepath.Join(frameworkDir, ".git")
-	if st, err := os.Stat(gitPath); err == nil {
-		_ = st
-		if hostRoot != "" && isSubmodule(hostRoot, frameworkDir) {
-			return FrameworkModeSubmodule
-		}
-		return FrameworkModeFolder
-	}
-	return FrameworkModeVendor
 }
 
 // absRelTo returns p resolved to absolute, anchored on base if relative.

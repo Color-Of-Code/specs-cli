@@ -36,14 +36,14 @@ Full installation notes (extension settings, combining both, platform paths) liv
 
 ## Documentation
 
-| Topic                                  | What it covers                                                                          |
-| -------------------------------------- | --------------------------------------------------------------------------------------- |
-| [Overview](docs/overview.md)           | One-page summary of what the engine delivers.                                           |
-| [Actors](docs/actors.md)               | The four authoring actors: stakeholder, author, analyst, architect.                     |
-| [Installation](docs/install.md)        | Extension and engine install paths, side-by-side usage.                                 |
+| Topic                                  | What it covers                                                                              |
+| -------------------------------------- | ------------------------------------------------------------------------------------------- |
+| [Overview](docs/overview.md)           | One-page summary of what the engine delivers.                                               |
+| [Actors](docs/actors.md)               | The four authoring actors: stakeholder, author, analyst, architect.                         |
+| [Installation](docs/install.md)        | Extension and engine install paths, side-by-side usage.                                     |
 | [Concepts](docs/concepts.md)           | specs root vs. host repo vs. framework dir; `managed` vs. `dev` mode for framework content. |
-| [Commands](docs/commands.md)           | Reference for every `specs` subcommand (also reachable as **Specs: …** in VS Code).     |
-| [Configuration](docs/configuration.md) | `.specs.yaml` keys, defaults, and overrides.                                            |
-| [Use cases](docs/use-cases/README.md)  | Task-oriented workflows grouped by authoring vs. setup.                                 |
-| [Development](docs/development.md)     | Building the engine and extension, release process.                                     |
-| [Extension](extension/README.md)       | VS Code-specific settings, packaging notes, platform matrix.                            |
+| [Commands](docs/commands.md)           | Reference for every `specs` subcommand (also reachable as **Specs: …** in VS Code).         |
+| [Configuration](docs/configuration.md) | `.specs.yaml` keys, defaults, and overrides.                                                |
+| [Use cases](docs/use-cases/README.md)  | Task-oriented workflows grouped by authoring vs. setup.                                     |
+| [Development](docs/development.md)     | Building the engine and extension, release process.                                         |
+| [Extension](extension/README.md)       | VS Code-specific settings, packaging notes, platform matrix.                                |

@@ -1,8 +1,7 @@
 // Integration tests for `specs init` covering its various framework
-// resolution paths and materialisation modes. Tests build the binary
-// into a tempdir and run it with --dry-run so no network or git
-// submodule work happens; they verify the command emits the expected
-// actions and exit codes.
+// resolution paths. Tests build the binary into a tempdir and run it
+// with --dry-run so no network work happens; they verify the command
+// emits the expected actions and exit codes.
 package main_test
 
 import (
@@ -70,54 +69,6 @@ func TestInit_Managed_DryRun(t *testing.T) {
 		if !strings.Contains(out, want) {
 			t.Errorf("output missing %q\n---\n%s", want, out)
 		}
-	}
-}
-
-func TestInit_Submodule_DryRun(t *testing.T) {
-	bin := buildBinary(t)
-	host := t.TempDir()
-	env := isolatedEnv(t)
-	out, _, code := runSpecsEnv(t, bin, host, env, "init",
-		"--framework", "https://example.com/fw.git@main",
-		"--framework-mode", "submodule",
-		"--dry-run")
-	if code != 0 {
-		t.Fatalf("exit %d\n%s", code, out)
-	}
-	if !strings.Contains(out, "submodule add") {
-		t.Errorf("expected submodule add action\n%s", out)
-	}
-}
-
-func TestInit_Vendor_DryRun(t *testing.T) {
-	bin := buildBinary(t)
-	host := t.TempDir()
-	env := isolatedEnv(t)
-	out, _, code := runSpecsEnv(t, bin, host, env, "init",
-		"--framework", "https://example.com/fw.git@main",
-		"--framework-mode", "vendor",
-		"--dry-run")
-	if code != 0 {
-		t.Fatalf("exit %d\n%s", code, out)
-	}
-	if !strings.Contains(out, "rm -rf") || !strings.Contains(out, "/.git") {
-		t.Errorf("expected vendor mode to strip .git\n%s", out)
-	}
-}
-
-func TestInit_UnknownFrameworkMode(t *testing.T) {
-	bin := buildBinary(t)
-	host := t.TempDir()
-	env := isolatedEnv(t)
-	_, se, code := runSpecsEnv(t, bin, host, env, "init",
-		"--framework", "https://example.com/fw.git",
-		"--framework-mode", "weird",
-		"--dry-run")
-	if code == 0 {
-		t.Fatalf("expected non-zero exit for unknown framework-mode")
-	}
-	if !strings.Contains(se, "unknown --framework-mode") {
-		t.Errorf("expected unknown-mode error: %s", se)
 	}
 }
 

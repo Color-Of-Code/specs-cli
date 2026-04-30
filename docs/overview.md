@@ -73,12 +73,12 @@ specs cr drain    ──►  git mv into canonical model paths
 
 ## Where things live
 
-| Path                        | Contents                                                                   |
-| --------------------------- | -------------------------------------------------------------------------- |
-| `.specs.yaml`               | Per-host configuration; resolves paths and framework.                      |
-| `model/`                    | Canonical model artifacts.                                                 |
-| `change-requests/NNN-slug/` | Work in progress, drained into `model/` on merge.                          |
-| `.specs-framework`          | Framework content (templates, lint config). Resolved per `framework_mode`. |
+| Path                        | Contents                                                                                                                   |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `.specs.yaml`               | Per-host configuration; resolves paths and framework.                                                                      |
+| `model/`                    | Canonical model artifacts.                                                                                                 |
+| `change-requests/NNN-slug/` | Work in progress, drained into `model/` on merge.                                                                          |
+| `.specs-framework`          | Framework content (templates, lint config). Either fetched into the user cache (managed) or supplied as a local directory. |
 
 ## Getting started
 

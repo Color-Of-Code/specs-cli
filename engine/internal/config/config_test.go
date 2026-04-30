@@ -44,8 +44,8 @@ func TestLoad_PlainFolderLayout(t *testing.T) {
 	if cfg.FrameworkDir != framework {
 		t.Errorf("FrameworkDir=%q want %q", cfg.FrameworkDir, framework)
 	}
-	if cfg.FrameworkMode != FrameworkModeVendor {
-		t.Errorf("FrameworkMode=%q want %q (no .git inside framework dir)", cfg.FrameworkMode, FrameworkModeVendor)
+	if cfg.FrameworkMode != FrameworkModeLocal {
+		t.Errorf("FrameworkMode=%q want %q", cfg.FrameworkMode, FrameworkModeLocal)
 	}
 }
 

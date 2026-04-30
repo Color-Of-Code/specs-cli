@@ -6,8 +6,8 @@ Every command below is reachable as `specs <command>` on the terminal. Most are 
 
 - `specs version` (or `--version`) — print the installed binary version.
 - `specs doctor` — diagnose environment, layout, and version drift.
-- `specs init [<path>] [--framework <source>] [--framework-mode managed|submodule|folder|vendor] [--with-model] [--with-vscode] [--force] [--dry-run]`
-  Create or configure a host. `<path>` defaults to the current directory and is created if missing. `--framework` accepts a registered name (`acme`), a name with a ref override (`acme@v2.1`), a remote git URL (`https://…/foo.git[@ref]`, `git@host:owner/repo.git[@ref]`), or a local path (`./fw`, `../specs-framework`, `/abs/dir`). With no `--framework` the registry's `default` entry is used. Local paths skip framework materialisation; `--framework-mode` only applies to remote sources.
+- `specs init [<path>] [--framework <source>] [--with-model] [--with-vscode] [--force] [--dry-run]`
+  Create or configure a host. `<path>` defaults to the current directory and is created if missing. `--framework` accepts a registered name (`acme`), a name with a ref override (`acme@v2.1`), a remote git URL (`https://…/foo.git[@ref]`, `git@host:owner/repo.git[@ref]`), or a local path (`./fw`, `../specs-framework`, `/abs/dir`). With no `--framework` the registry's `default` entry is used. Remote sources are fetched into the user cache (managed mode); local paths are recorded in `framework_dir` and left untouched, so the host can hold the framework as a plain folder, a git submodule, or a vendored snapshot — whichever fits.
 - `specs lint [--all] [--links] [--style] [--baselines]` — run lint checks. With no flag, all checks run.
 - `specs format [--check] [--at <path>] [files...]` — format markdown files in place; `--check` exits non-zero if any file would change.
 - `specs framework update [--to <ref>]` — update the `.specs-framework` content layer.

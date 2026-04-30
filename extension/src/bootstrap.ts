@@ -1,11 +1,10 @@
-// Init wizard. Maps multi-step QuickPick answers to a 'specs init ...'
-// invocation. Surface name kept as `specs.bootstrap` for stable keybindings.
+// Init wizard. Maps QuickPick answers to a 'specs init ...' invocation.
+// Surface name kept as `specs.bootstrap` for stable keybindings.
 import * as vscode from "vscode";
 import { runInTerminal, runAndCapture, getOutput } from "./engine";
 
 interface InitAnswers {
   framework: string;
-  frameworkMode: "managed" | "submodule" | "folder" | "vendor";
   withModel: boolean;
   withVscode: boolean;
 }
@@ -29,11 +28,6 @@ export async function runBootstrapWizard(context: vscode.ExtensionContext): Prom
     return;
   }
 
-  const frameworkMode = await pickFrameworkMode();
-  if (!frameworkMode) {
-    return;
-  }
-
   const extras = await vscode.window.showQuickPick(
     [
       { label: "Create model/ and change-requests/ skeletons", picked: true },
@@ -53,7 +47,6 @@ export async function runBootstrapWizard(context: vscode.ExtensionContext): Prom
 
   const answers: InitAnswers = {
     framework: framework.trim(),
-    frameworkMode,
     withModel,
     withVscode,
   };
@@ -88,7 +81,7 @@ export async function runBootstrapWizard(context: vscode.ExtensionContext): Prom
 }
 
 function buildArgs(a: InitAnswers): string[] {
-  const args = ["init", "--framework", a.framework, "--framework-mode", a.frameworkMode];
+  const args = ["init", "--framework", a.framework];
   if (a.withModel) {
     args.push("--with-model");
   }
@@ -113,24 +106,4 @@ function pickFolder(): vscode.WorkspaceFolder | undefined {
     "Specs: multi-root workspaces are not yet supported by the init wizard.",
   );
   return undefined;
-}
-
-async function pickFrameworkMode(): Promise<InitAnswers["frameworkMode"] | undefined> {
-  const items: vscode.QuickPickItem[] = [
-    {
-      label: "managed",
-      description: "fetch into the user cache, share across projects (recommended)",
-    },
-    { label: "submodule", description: "add .specs-framework as a submodule of the host repo" },
-    { label: "folder", description: "clone .specs-framework next to the specs root" },
-    { label: "vendor", description: "snapshot .specs-framework without git history" },
-  ];
-  const pick = await vscode.window.showQuickPick(items, {
-    placeHolder: "How should .specs-framework be materialised? (ignored for local paths)",
-    ignoreFocusOut: true,
-  });
-  if (!pick) {
-    return undefined;
-  }
-  return pick.label as InitAnswers["frameworkMode"];
 }

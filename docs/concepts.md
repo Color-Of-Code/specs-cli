@@ -96,33 +96,33 @@ specs framework seed --out <dir>           # create an empty skeleton
 
 Regardless of the source, the framework content does **not** have to live inside the host repo. Pick one of two consumption modes:
 
-### managed (default) — hidden, engine-managed, read-only
+### managed (default) — hidden, engine-fetched, shared across hosts
 
 The engine fetches `.specs-framework` once into the user data dir and re-uses it across every host project on the machine. End users never see the content, never commit it, never update it manually.
 
 - Location: `os.UserCacheDir()` + `/specs-toolchain/framework/<ref>/`. On Linux that resolves to `${XDG_CACHE_HOME:-~/.cache}/specs-toolchain/framework/<ref>/`; on macOS `~/Library/Caches/specs-toolchain/framework/<ref>/`; on Windows `%LocalAppData%\specs-toolchain\framework\<ref>`.
 - Version pin: `framework_ref` in `.specs.yaml` (a tag or commit). The host commits **only** `.specs.yaml`; nothing else.
 - Refreshing: `specs framework update --to <ref>` rewrites `framework_ref` and re-fetches if needed.
-- This is what `specs init` gives you by default.
+- This is what `specs init` gives you when `--framework` points at a registry name or a remote git URL.
 
-### dev — a regular checkout you can edit
+### local — a directory you supply
 
-Use this when you are working on the framework itself (editing templates, process docs, skills). Clone `specs-framework` anywhere and point `framework_dir` at it:
+Use this when you want the framework content under your own control: a regular checkout you can edit, a git submodule of the host repo, or a vendored snapshot without git history. Clone, vendor, or `git submodule add` the framework wherever you want, then point `framework_dir` at it:
 
 ```yaml
 # .specs.yaml
-framework_dir: ../specs-framework # or any absolute/relative path
+framework_dir: ../specs-framework # or .specs-framework, or any absolute path
 ```
 
-Or use the in-tree submodule layout if you want every contributor on a host project to see the content checked into the repo. Both submodule and plain-folder checkouts are auto-detected.
+`specs init --framework <local-path>` writes this for you. The engine never touches the directory; refreshing it is your job (`git pull`, `git submodule update`, re-extracting a vendored tarball).
 
 ### Quick decision
 
-| You are…                               | Use this                         |
-| -------------------------------------- | -------------------------------- |
-| writing specs in a host project        | **managed**                      |
-| editing templates / process docs       | **dev**                          |
-| starting a brand-new framework         | **seed** then switch to **dev**  |
-| working air-gapped, no internet at all | **dev** with a vendored snapshot |
+| You are…                               | Use this                                  |
+| -------------------------------------- | ----------------------------------------- |
+| writing specs in a host project        | **managed**                               |
+| editing templates / process docs       | **local** with an editable git checkout   |
+| starting a brand-new framework         | **seed** then switch to **local**         |
+| working air-gapped, no internet at all | **local** with a vendored snapshot        |
 
 Switch modes any time by editing `.specs.yaml`; nothing else changes.

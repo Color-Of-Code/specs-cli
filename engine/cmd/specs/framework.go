@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/Color-Of-Code/specs-toolchain/engine/internal/cache"
@@ -37,12 +38,10 @@ func cmdFramework(args []string) error {
 	}
 }
 
-// cmdFrameworkUpdate updates the .specs-framework content layer in place.
+// cmdFrameworkUpdate updates the framework content layer in place.
 //
-//	managed:   fetch into the user cache and rewrite framework_ref
-//	submodule: git fetch + checkout, then host-side git add
-//	folder:    git pull (or checkout <ref>)
-//	vendor:    re-clone tarball-style at the requested ref
+//	managed: fetch into the user cache and rewrite framework_ref
+//	local:   git fetch + checkout/pull inside framework_dir (no-op for non-git checkouts)
 func cmdFrameworkUpdate(args []string) error {
 	fs2 := flag.NewFlagSet("framework update", flag.ContinueOnError)
 	to := fs2.String("to", "", "tag/branch/commit to check out (empty = pull current branch / default branch)")
@@ -62,39 +61,38 @@ func cmdFrameworkUpdate(args []string) error {
 	switch cfg.FrameworkMode {
 	case config.FrameworkModeManaged:
 		return updateManagedFramework(cfg, *to)
-	}
-
-	if cfg.FrameworkDir == "" {
-		return exitWith(1, "framework_dir not found; run `specs init` (managed) or set framework_dir (dev)")
-	}
-
-	switch cfg.FrameworkMode {
-	case config.FrameworkModeSubmodule, config.FrameworkModeFolder:
+	case config.FrameworkModeLocal:
+		if cfg.FrameworkDir == "" {
+			return exitWith(1, "framework_dir not found; run `specs init` or set framework_dir")
+		}
+		if _, err := os.Stat(filepath.Join(cfg.FrameworkDir, ".git")); err != nil {
+			return exitWith(2, "framework_dir %s has no .git; refresh it manually (re-clone, re-vendor, or `git submodule update`)", cfg.FrameworkDir)
+		}
 		if err := runGit(cfg.FrameworkDir, "fetch", "--tags"); err != nil {
 			return err
 		}
 		if *to != "" {
-			if err := runGit(cfg.FrameworkDir, "checkout", *to); err != nil {
-				return err
-			}
-		} else {
-			// pull on current branch; if detached, this is a no-op-ish error
-			// that we report but do not fail on.
-			_ = runGit(cfg.FrameworkDir, "pull", "--ff-only")
+			return runGit(cfg.FrameworkDir, "checkout", *to)
 		}
-		if cfg.FrameworkMode == config.FrameworkModeSubmodule && cfg.HostRoot != "" {
-			rel, _ := filepath.Rel(cfg.HostRoot, cfg.FrameworkDir)
-			_ = runGit(cfg.HostRoot, "add", rel)
-			fmt.Println("staged submodule pointer in host; remember to commit.")
-		}
+		// pull on current branch; if detached, this fails harmlessly.
+		_ = runGit(cfg.FrameworkDir, "pull", "--ff-only")
 		return nil
-	case config.FrameworkModeVendor:
-		return exitWith(2, "framework_mode=vendor: re-run `specs init --framework-mode vendor --framework <source>@<ref>` to refresh")
 	case config.FrameworkModeMissing:
 		return exitWith(1, "framework_dir is missing on disk; run `specs init`")
 	default:
 		return exitWith(1, "unknown framework_mode %q", cfg.FrameworkMode)
 	}
+}
+
+// runGit invokes git with the given args inside dir.
+func runGit(dir string, args ...string) error {
+	cmd := exec.Command("git", args...)
+	if dir != "" {
+		cmd.Dir = dir
+	}
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
 // updateManagedFramework fetches the requested ref into the user cache and rewrites
