@@ -1,4 +1,4 @@
-.PHONY: lint format format-check check build build-engine build-extension package-extension deploy-dev
+.PHONY: lint format format-check check test vet build build-engine build-extension package-extension deploy-dev
 
 lint:
 	cd engine && go run ./cmd/specs lint --style
@@ -9,7 +9,13 @@ format:
 format-check:
 	cd engine && go run ./cmd/specs format --check
 
-check: format-check lint
+vet:
+	cd engine && go vet ./...
+
+test:
+	cd engine && go test ./...
+
+check: format-check lint vet test
 
 build: build-engine build-extension
 

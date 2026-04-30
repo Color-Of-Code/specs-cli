@@ -37,10 +37,12 @@ make build-engine       # engine binary -> ./specs
 make build-extension    # extension TypeScript
 make package-extension  # produce a .vsix
 make deploy-dev         # build + symlink extension into ~/.vscode/extensions
-make check              # format-check + lint (what CI runs)
+make check              # format-check + lint + vet + test (what CI runs)
 make format             # specs format (in-place)
 make format-check       # specs format --check (CI gate)
 make lint               # specs lint --style
+make vet                # go vet ./... in engine
+make test               # go test ./... in engine
 ```
 
 Direct invocations:
