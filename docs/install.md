@@ -37,3 +37,26 @@ specs doctor
 ## Combining both
 
 Installing the extension and the CLI side by side is fine and common: the extension uses its bundled binary by default, and you still get `specs` on the terminal for ad-hoc commands and CI. Set `specs.useGlobalBinary = true` to make the extension prefer the CLI on `PATH` so both stay on the same version.
+
+---
+
+## Advanced: starting with a custom framework
+
+By default, `specs init` and `specs bootstrap` pull the official [specs-framework](https://github.com/Color-Of-Code/specs-framework) content. If your organisation maintains its own framework, pass `--framework <name>` (resolved via the [framework registry](configuration.md#framework-registry)) or `--tools-url <git-url>`.
+
+If you need to create a **brand-new framework from scratch** rather than forking an existing one:
+
+```bash
+specs framework seed --out /path/to/my-framework
+cd /path/to/my-framework
+git init && git add -A && git commit -m "initial skeleton"
+# push to your remote of choice
+```
+
+Then register it for convenient reuse:
+
+```bash
+specs framework add my-org --url https://git.example.com/my-org/my-framework.git
+```
+
+See [concepts → Framework sources](concepts.md#framework-sources) and [commands → Framework management](commands.md#framework-management-commands) for full details.

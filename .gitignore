@@ -1,5 +1,7 @@
-node_modules/
-extension/node_modules/
-extension/out/
-extension/bin/
-extension/*.vsix
+/node_modules/
+/extension/node_modules/
+/extension/out/
+/extension/bin/
+/extension/*.vsix
+/specs
+/cli/specs
