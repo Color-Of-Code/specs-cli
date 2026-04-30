@@ -29,15 +29,36 @@ When a [framework registry](#framework-registry) is configured, the toolchain re
 
 ## Optional knobs
 
-| Key                   | Purpose                                       |
-| --------------------- | --------------------------------------------- |
-| `change_requests_dir` | Override the default `change-requests/` path. |
-| `model_dir`           | Override the default `model/` path.           |
-| `baselines_file`      | Override the baselines table location.        |
-| `markdownlint_config` | Path to a custom markdownlint config.         |
-| `templates_schema`    | Path to a custom templates schema.            |
+| Key                   | Purpose                                                             |
+| --------------------- | ------------------------------------------------------------------- |
+| `change_requests_dir` | Override the default `change-requests/` path.                       |
+| `model_dir`           | Override the default `model/` path.                                 |
+| `baselines_file`      | Override the baselines table location.                              |
+| `style_config`        | Path to a custom `style.yaml` for markdown style rules.             |
+| `markdownlint_config` | **Deprecated** — alias for `style_config` (kept for compatibility). |
+| `templates_schema`    | Path to a custom templates schema.                                  |
 
 Defaults are sensible; only set these when overriding.
+
+### `style.yaml` schema
+
+The `style.yaml` file controls markdown style checking with abstract, tool-independent rule names. If no `style_config` is set, the toolchain looks for `<tools_dir>/lint/style.yaml`, falling back to compiled-in defaults.
+
+```yaml
+rules:
+  line_length: false # false (disabled) or integer max
+  inline_html: false # allow inline HTML
+  first_heading_h1: false # require first line to be h1
+  heading_style: atx # "atx" (# Heading) or "setext"
+  blank_lines_around_headings: true
+  blank_lines_around_fences: true
+  list_marker: dash # "dash" (-) or "asterisk" (*)
+  no_trailing_whitespace: true
+  no_consecutive_blank_lines: true
+  fenced_code_language: true # require language on fenced code blocks
+```
+
+Only include keys you want to override — omitted keys use the compiled-in defaults.
 
 ---
 

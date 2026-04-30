@@ -51,7 +51,8 @@ type File struct {
 	ChangeRequestsDir  string            `yaml:"change_requests_dir,omitempty"`
 	ModelDir           string            `yaml:"model_dir,omitempty"`
 	BaselinesFile      string            `yaml:"baselines_file,omitempty"`
-	MarkdownlintConfig string            `yaml:"markdownlint_config,omitempty"`
+	StyleConfig        string            `yaml:"style_config,omitempty"`
+	MarkdownlintConfig string            `yaml:"markdownlint_config,omitempty"` // deprecated: use style_config
 	MinSpecsVersion    string            `yaml:"min_specs_version,omitempty"`
 	TemplatesSchema    int               `yaml:"templates_schema,omitempty"`
 	Repos              map[string]string `yaml:"repos,omitempty"`
@@ -71,7 +72,8 @@ type Resolved struct {
 	ChangeRequestsDir  string // absolute path
 	ModelDir           string // absolute path
 	BaselinesFile      string // absolute path; may not exist
-	MarkdownlintConfig string // absolute path; may not exist
+	StyleConfig        string // absolute path to style.yaml; may be empty (use embedded defaults)
+	MarkdownlintConfig string // deprecated: resolved from style_config or legacy markdownlint_config
 	MinSpecsVersion    string
 	TemplatesSchema    int
 	Repos              map[string]string // logical name -> path relative to HostRoot's parent (workspace)
@@ -156,11 +158,18 @@ func Load(start string) (*Resolved, error) {
 	r.ModelDir = absOr(r.SpecsRoot, f.ModelDir, "model")
 	r.BaselinesFile = absOr(r.SpecsRoot, f.BaselinesFile, filepath.Join("model", "baselines", "repo-baseline.md"))
 
-	if f.MarkdownlintConfig != "" {
-		r.MarkdownlintConfig = absRelTo(r.SpecsRoot, f.MarkdownlintConfig)
-	} else if r.ToolsDir != "" {
-		r.MarkdownlintConfig = filepath.Join(r.ToolsDir, "lint", ".markdownlint-cli2.jsonc")
+	// Resolve style config: style_config > markdownlint_config (deprecated) > tools_dir fallback.
+	switch {
+	case f.StyleConfig != "":
+		r.StyleConfig = absRelTo(r.SpecsRoot, f.StyleConfig)
+	case f.MarkdownlintConfig != "":
+		// Deprecated key: still honour it but resolve to the new field.
+		r.StyleConfig = absRelTo(r.SpecsRoot, f.MarkdownlintConfig)
+	case r.ToolsDir != "":
+		r.StyleConfig = filepath.Join(r.ToolsDir, "lint", "style.yaml")
 	}
+	// Keep MarkdownlintConfig in sync for any legacy callers.
+	r.MarkdownlintConfig = r.StyleConfig
 
 	r.MinSpecsVersion = f.MinSpecsVersion
 	r.TemplatesSchema = f.TemplatesSchema

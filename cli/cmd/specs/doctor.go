@@ -96,7 +96,7 @@ func cmdDoctor(args []string) error {
 	fmt.Printf("model dir:        %s\n", cfg.ModelDir)
 	fmt.Printf("change-requests:  %s\n", cfg.ChangeRequestsDir)
 	fmt.Printf("baselines file:   %s%s\n", cfg.BaselinesFile, existsSuffix(cfg.BaselinesFile))
-	fmt.Printf("markdownlint:     %s%s\n", cfg.MarkdownlintConfig, existsSuffix(cfg.MarkdownlintConfig))
+	fmt.Printf("style config:     %s%s\n", cfg.StyleConfig, existsSuffix(cfg.StyleConfig))
 	if cfg.MinSpecsVersion != "" {
 		fmt.Printf("min_specs_version: %s\n", cfg.MinSpecsVersion)
 	}
@@ -206,7 +206,7 @@ func emitDoctorJSON(cfg *config.Resolved) error {
 		ModelDir:          cfg.ModelDir,
 		ChangeRequestsDir: cfg.ChangeRequestsDir,
 		BaselinesFile:     cfg.BaselinesFile,
-		MarkdownlintCfg:   cfg.MarkdownlintConfig,
+		MarkdownlintCfg:   cfg.StyleConfig,
 		MinSpecsVersion:   cfg.MinSpecsVersion,
 		TemplatesSchema:   cfg.TemplatesSchema,
 		Repos:             repos,

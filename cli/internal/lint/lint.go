@@ -200,41 +200,55 @@ func stripFragment(s string) string {
 	return s
 }
 
-// CheckMarkdownStyle shells out to markdownlint-cli2 (preferred), then
-// pnpm dlx, then npx as a legacy fallback. It is a no-op (warning only) if
-// none are available.
+// CheckMarkdownStyle runs the built-in Go-native markdown style checker.
+// configPath points to a style.yaml; if empty, compiled-in defaults are used.
 func CheckMarkdownStyle(out io.Writer, specsRoot, configPath string, r *Result) {
-	fmt.Fprintln(out, "== markdownlint ==")
-	if configPath == "" {
-		r.warnf("markdownlint config not configured; skipping style check")
+	fmt.Fprintln(out, "== markdown style ==")
+
+	cfg, err := LoadStyleConfig(configPath)
+	if err != nil {
+		r.errf("load style config: %v", err)
 		return
 	}
-	if _, err := os.Stat(configPath); err != nil {
-		r.warnf("markdownlint config not found at %s; skipping", configPath)
+
+	count := 0
+	walkErr := filepath.Walk(specsRoot, func(path string, info os.FileInfo, walkErr error) error {
+		if walkErr != nil {
+			return nil
+		}
+		rel, _ := filepath.Rel(specsRoot, path)
+		if rel == "." {
+			return nil
+		}
+		if isExcludedRel(rel) {
+			if info.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		if info.IsDir() || !strings.HasSuffix(strings.ToLower(path), ".md") {
+			return nil
+		}
+		if info.Mode()&os.ModeSymlink != 0 {
+			return nil
+		}
+
+		violations := CheckFileStyle(path, &cfg.Rules)
+		for _, v := range violations {
+			relPath, _ := filepath.Rel(specsRoot, v.File)
+			fmt.Fprintf(out, "%s:%d: [%s] %s\n", relPath, v.Line, v.Rule, v.Message)
+			r.errf("%s:%d: [%s] %s", relPath, v.Line, v.Rule, v.Message)
+			count++
+		}
+		return nil
+	})
+	if walkErr != nil {
+		r.errf("walk specs root: %v", walkErr)
 		return
 	}
-	var cmd *exec.Cmd
-	if path, err := exec.LookPath("markdownlint-cli2"); err == nil {
-		cmd = exec.Command(path, "--config", configPath, "**/*.md")
-	} else if path, err := exec.LookPath("pnpm"); err == nil {
-		fmt.Fprintln(out, "using pnpm dlx markdownlint-cli2")
-		cmd = exec.Command(path, "dlx", "markdownlint-cli2", "--config", configPath, "**/*.md")
-	} else if path, err := exec.LookPath("npx"); err == nil {
-		fmt.Fprintln(out, "using npx markdownlint-cli2 (legacy fallback)")
-		cmd = exec.Command(path, "--yes", "markdownlint-cli2", "--config", configPath, "**/*.md")
-	} else {
-		r.warnf("markdownlint-cli2, pnpm, and npx not available; skipping style check")
-		r.warnf("install with: pnpm add -D markdownlint-cli2  (or make pnpm available for pnpm dlx)")
-		return
+	if count == 0 {
+		fmt.Fprintln(out, "ok")
 	}
-	cmd.Dir = specsRoot
-	cmd.Stdout = out
-	cmd.Stderr = out
-	if err := cmd.Run(); err != nil {
-		r.errf("markdownlint: %v", err)
-		return
-	}
-	fmt.Fprintln(out, "ok")
 }
 
 // baselineRowRe matches a markdown table row in the Components section of the

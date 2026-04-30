@@ -1,0 +1,11 @@
+rules:
+  line_length: false
+  inline_html: false
+  first_heading_h1: false
+  heading_style: atx
+  blank_lines_around_headings: true
+  blank_lines_around_fences: true
+  list_marker: dash
+  no_trailing_whitespace: true
+  no_consecutive_blank_lines: true
+  fenced_code_language: true
