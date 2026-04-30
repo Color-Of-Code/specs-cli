@@ -35,7 +35,7 @@ When a [framework registry](#framework-registry) is configured, the toolchain re
 | `model_dir`           | Override the default `model/` path.                     |
 | `baselines_file`      | Override the baselines table location.                  |
 | `style_config`        | Path to a custom `style.yaml` for markdown style rules. |
-| `templates_schema`    | Path to a custom templates schema.                      |
+| `templates_schema`    | Integer schema version expected by the engine.          |
 
 Defaults are sensible; only set these when overriding.
 

@@ -39,7 +39,7 @@ For organisations that want to build a framework **from scratch** without forkin
 specs framework seed --out /path/to/my-framework
 ```
 
-> **Important:** the seeded directory is _not_ managed by the toolchain after creation. It is the caller's responsibility to initialise a git repository in the output folder, push it to a remote, and maintain it going forward. The toolchain only creates the initial skeleton.
+> **Important:** the seeded directory is _not_ managed by the toolchain after creation. The caller is responsible for initialising a git repository in the output folder, pushing it to a remote, and maintaining it. The toolchain only creates the initial skeleton.
 
 Once the seeded directory is pushed to a remote you can reference it like any other framework source:
 
@@ -56,7 +56,7 @@ tools_dir: ../my-framework
 
 ## Framework registry
 
-To avoid remembering URLs and to standardise framework selection across teams, the toolchain supports a **framework registry** — a name → source mapping stored in user-level or project-level configuration.
+To avoid remembering URLs and to standardise framework selection across teams, the toolchain supports a **framework registry** — a name → source mapping stored in user-level configuration.
 
 Registry entries live in `~/.config/specs/frameworks.yaml` (XDG-compliant path on Linux; platform equivalents elsewhere):
 
@@ -114,7 +114,7 @@ Use this when you are working on the framework itself (editing templates, proces
 tools_dir: ../specs-framework # or any absolute/relative path
 ```
 
-Or keep the historical submodule layout if you want every contributor on a host project to see the content in-tree. Both submodule and plain-folder checkouts are auto-detected.
+Or use the in-tree submodule layout if you want every contributor on a host project to see the content checked into the repo. Both submodule and plain-folder checkouts are auto-detected.
 
 ### Quick decision
 
