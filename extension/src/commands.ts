@@ -68,26 +68,34 @@ async function scaffold(context: vscode.ExtensionContext, kind: ScaffoldKind): P
   }
   const cwd = findSpecsRoot(folder) ?? folder.uri.fsPath;
 
+  const placeholder =
+    kind === "requirement"
+      ? "e.g. core/012-some-requirement"
+      : kind === "feature" || kind === "component"
+      ? "e.g. core/some-slug"
+      : "e.g. some-slug";
+  const relPath = await vscode.window.showInputBox({
+    prompt: `Relative path under model/${kind}s/ (without .md)`,
+    placeHolder: placeholder,
+    ignoreFocusOut: true,
+    validateInput: (v) => (v.trim() ? null : "path is required"),
+  });
+  if (!relPath) {
+    return;
+  }
   const title = await vscode.window.showInputBox({
-    prompt: `${kind} title`,
+    prompt: `${kind} title (optional — defaults to derived from slug)`,
     placeHolder: "Short, descriptive title",
     ignoreFocusOut: true,
   });
-  if (!title) {
+  if (title === undefined) {
     return;
   }
-  const area = await vscode.window.showInputBox({
-    prompt: "Area (subdirectory under model/<kind>s/)",
-    placeHolder: "e.g. core, security, auth",
-    ignoreFocusOut: true,
-  });
-  if (area === undefined) {
-    return;
+  const args = ["scaffold", kind];
+  if (title) {
+    args.push("--title", title);
   }
-  const args = ["scaffold", kind, "--title", title];
-  if (area) {
-    args.push("--area", area);
-  }
+  args.push(relPath);
   runInTerminal(context, args, cwd);
 }
 
@@ -98,14 +106,35 @@ async function crNew(context: vscode.ExtensionContext): Promise<void> {
   }
   const cwd = findSpecsRoot(folder) ?? folder.uri.fsPath;
 
-  const title = await vscode.window.showInputBox({
-    prompt: "Change-request title",
+  const id = await vscode.window.showInputBox({
+    prompt: "Change-request id (e.g. 042)",
     ignoreFocusOut: true,
+    validateInput: (v) => (/^\d+$/.test(v) ? null : "expected a number"),
   });
-  if (!title) {
+  if (!id) {
     return;
   }
-  runInTerminal(context, ["cr", "new", "--title", title], cwd);
+  const slug = await vscode.window.showInputBox({
+    prompt: "Change-request slug (kebab-case)",
+    placeHolder: "e.g. add-login-flow",
+    ignoreFocusOut: true,
+    validateInput: (v) => (/^[a-z0-9]+(-[a-z0-9]+)*$/.test(v) ? null : "expected kebab-case"),
+  });
+  if (!slug) {
+    return;
+  }
+  const title = await vscode.window.showInputBox({
+    prompt: "Change-request title (optional — defaults to derived from slug)",
+    ignoreFocusOut: true,
+  });
+  if (title === undefined) {
+    return;
+  }
+  const args = ["cr", "new", "--id", id, "--slug", slug];
+  if (title) {
+    args.push("--title", title);
+  }
+  runInTerminal(context, args, cwd);
 }
 
 async function crDrain(context: vscode.ExtensionContext): Promise<void> {
