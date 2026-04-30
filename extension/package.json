@@ -32,7 +32,7 @@
     "commands": [
       {
         "command": "specs.bootstrap",
-        "title": "Bootstrap host…",
+        "title": "Init host…",
         "category": "Specs"
       },
       {

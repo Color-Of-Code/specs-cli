@@ -83,7 +83,7 @@ specs cr drain    ──►  git mv into canonical model paths
 ## Getting started
 
 1. Install the binary: see [install.md](install.md).
-2. Bootstrap or initialise a host: `specs bootstrap` / `specs init`.
+2. Initialise a host: `specs init`.
 3. Verify the setup: `specs doctor`.
 4. Open a change request and start authoring: see [actors.md](actors.md)
    and [use-cases/](use-cases/README.md).

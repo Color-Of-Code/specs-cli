@@ -66,7 +66,7 @@ func cmdScaffold(args []string) error {
 		}
 	}
 	if cfg.FrameworkDir == "" {
-		return exitWith(1, "framework dir not available; run `specs bootstrap` or set framework_dir/framework_url")
+		return exitWith(1, "framework dir not available; run `specs init` or set framework_dir/framework_url")
 	}
 
 	tplName, dirName, ok := scaffoldKindMap(kind)

@@ -6,10 +6,8 @@ Every command below is reachable as `specs <command>` on the terminal. Most are 
 
 - `specs version` (or `--version`) — print the installed binary version.
 - `specs doctor` — diagnose environment, layout, and version drift.
-- `specs init [--at <path>] [--force] [--with-vscode] [--framework <name>] [--framework-url <URL> --framework-ref <ref> | --framework-dir <dir>]`
-  Configure an existing host (writes `.specs.yaml`). With no source flags the engine resolves the registry's `default` entry; otherwise the explicit flags win. `--framework-url` and `--framework-dir` are mutually exclusive.
-- `specs bootstrap [--at <path>] [--layout folder|submodule] [--specs-url <URL>] [--specs-ref <ref>] [--framework-mode managed|submodule|folder|vendor] [--framework <name> | --framework-url <URL> --framework-ref <ref>] [--with-model] [--with-vscode] [--dry-run]`
-  Scaffold a new host. `managed` is the default framework mode. `--layout submodule` requires `--specs-url`. Path-based registry entries are not supported here — use `specs init --framework <name>` on an existing host instead.
+- `specs init [<path>] [--framework <source>] [--framework-mode managed|submodule|folder|vendor] [--with-model] [--with-vscode] [--force] [--dry-run]`
+  Create or configure a host. `<path>` defaults to the current directory and is created if missing. `--framework` accepts a registered name (`acme`), a name with a ref override (`acme@v2.1`), a remote git URL (`https://…/foo.git[@ref]`, `git@host:owner/repo.git[@ref]`), or a local path (`./fw`, `../specs-framework`, `/abs/dir`). With no `--framework` the registry's `default` entry is used. Local paths skip framework materialisation; `--framework-mode` only applies to remote sources.
 - `specs lint [--all] [--links] [--style] [--baselines]` — run lint checks. With no flag, all checks run.
 - `specs format [--check] [--at <path>] [files...]` — format markdown files in place; `--check` exits non-zero if any file would change.
 - `specs framework update [--to <ref>]` — update the `.specs-framework` content layer.
@@ -50,6 +48,6 @@ The command fails if the target directory already exists and is non-empty. After
 
 1. Running `git init` in the output directory.
 2. Pushing it to a git remote for team use.
-3. Registering it in the framework registry (or using `--framework-url` directly).
+3. Registering it in the framework registry (or passing the URL directly to `specs init --framework <url>`).
 
 This is an **advanced** operation intended for organisations that need a bespoke framework rather than forking an existing one.

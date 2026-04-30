@@ -2,8 +2,8 @@
 // mapping stored at ~/.config/specs/frameworks.yaml (or the platform equivalent).
 //
 // The registry lets users assign short names (e.g. "default", "acme", "local-dev")
-// to framework sources and reference them via `--framework <name>` on init and
-// bootstrap, instead of pasting URLs.
+// to framework sources and reference them via `--framework <name>` on init,
+// instead of pasting URLs.
 package registry
 
 import (

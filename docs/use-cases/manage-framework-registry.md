@@ -4,8 +4,8 @@
 
 Maintain the user-level mapping from short framework names (e.g.
 `default`, `acme`, `local-dev`) to git URLs or local paths, so
-`specs init` and `specs bootstrap` can be invoked with `--framework
-<name>` instead of raw URLs.
+`specs init` can be invoked with `--framework <name>` instead of raw
+URLs.
 
 ## Actors
 
@@ -38,13 +38,10 @@ the current entries.
    resolve to it.
 2. Add additional named entries for forks, vendor frameworks, or local
    working copies (`--path`).
-3. Run [`specs init`](init-existing-repo.md) or
-   [`specs bootstrap`](bootstrap-host.md) with `--framework <name>` to
-   pick a non-default entry.
+3. Run [`specs init`](setup-host.md) with `--framework <name>` to pick a
+   non-default entry.
 
 ### Iteration
 
 Re-run `add` to update an entry (it overwrites by name) or `remove`
-followed by `add` for a clean replace. Path-based entries cannot be
-used by `bootstrap`; use `init --framework` on an existing host
-instead.
+followed by `add` for a clean replace.

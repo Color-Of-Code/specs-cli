@@ -62,7 +62,7 @@ func TestInit_WritesConfig_FrameworkDir(t *testing.T) {
 	host := t.TempDir()
 	env := isolatedEnv(t)
 
-	out, se, code := runSpecsEnv(t, bin, host, env, "init", "--framework-dir", "../specs-framework")
+	out, se, code := runSpecsEnv(t, bin, host, env, "init", "--framework", "../specs-framework")
 	if code != 0 {
 		t.Fatalf("exit %d\nstdout:%s\nstderr:%s", code, out, se)
 	}
@@ -72,7 +72,7 @@ func TestInit_WritesConfig_FrameworkDir(t *testing.T) {
 		t.Fatalf("read .specs.yaml: %v", err)
 	}
 	body := string(data)
-	if !strings.Contains(body, "framework_dir:") || !strings.Contains(body, "../specs-framework") {
+	if !strings.Contains(body, "framework_dir:") || !strings.Contains(body, "specs-framework") {
 		t.Errorf("expected framework_dir line in .specs.yaml:\n%s", body)
 	}
 }
@@ -82,10 +82,10 @@ func TestInit_FailsWithoutForce(t *testing.T) {
 	host := t.TempDir()
 	env := isolatedEnv(t)
 
-	if _, _, code := runSpecsEnv(t, bin, host, env, "init", "--framework-dir", "x"); code != 0 {
+	if _, _, code := runSpecsEnv(t, bin, host, env, "init", "--framework", "./x"); code != 0 {
 		t.Fatalf("first init unexpectedly failed (exit %d)", code)
 	}
-	_, se, code := runSpecsEnv(t, bin, host, env, "init", "--framework-dir", "x")
+	_, se, code := runSpecsEnv(t, bin, host, env, "init", "--framework", "./x")
 	if code == 0 {
 		t.Fatalf("expected non-zero exit when .specs.yaml exists without --force")
 	}
@@ -99,13 +99,10 @@ func TestInit_RejectsConflictingFlags(t *testing.T) {
 	host := t.TempDir()
 	env := isolatedEnv(t)
 
-	_, se, code := runSpecsEnv(t, bin, host, env,
-		"init", "--framework-url", "https://example.com/x.git", "--framework-dir", "y")
+	_, _, code := runSpecsEnv(t, bin, host, env,
+		"init", "--framework", "https://example.com/x.git", "unexpected", "extra", "args")
 	if code == 0 {
-		t.Fatalf("expected non-zero exit for conflicting flags")
-	}
-	if !strings.Contains(se, "mutually exclusive") {
-		t.Errorf("expected mutual-exclusion error, got: %s", se)
+		t.Fatalf("expected non-zero exit for too many positional args")
 	}
 }
 
@@ -114,7 +111,7 @@ func TestDoctor_JSON_AfterInit(t *testing.T) {
 	host := t.TempDir()
 	env := isolatedEnv(t)
 
-	if _, se, code := runSpecsEnv(t, bin, host, env, "init", "--framework-dir", "../specs-framework"); code != 0 {
+	if _, se, code := runSpecsEnv(t, bin, host, env, "init", "--framework", "../specs-framework"); code != 0 {
 		t.Fatalf("init failed: exit %d\n%s", code, se)
 	}
 	out, se, code := runSpecsEnv(t, bin, host, env, "doctor", "--json")

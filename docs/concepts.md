@@ -12,7 +12,7 @@ Three paths matter and are referenced throughout the documentation and in `specs
 
 ## Framework sources
 
-A **framework source** is the origin from which `.specs-framework` content is obtained. Every `specs init` or `specs bootstrap` invocation resolves a framework source to populate the framework layer. Three kinds exist:
+A **framework source** is the origin from which `.specs-framework` content is obtained. Every `specs init` invocation resolves a framework source to populate the framework layer. Three kinds exist:
 
 ### Remote URL (default)
 
@@ -73,14 +73,14 @@ frameworks:
     path: ~/src/specs-framework
 ```
 
-With a registry configured, `specs init` and `specs bootstrap` accept `--framework <name>` instead of raw URLs:
+With a registry configured, `specs init` accepts `--framework <name>` instead of raw URLs:
 
 ```bash
 specs init --framework my-company
-specs bootstrap --framework local-dev
+specs init --framework local-dev
 ```
 
-The `default` entry is used when no `--framework`, `--framework-url`, or `--framework-dir` flag is provided.
+The `default` entry is used when no `--framework` flag is provided.
 
 ### Managing the registry
 
@@ -103,7 +103,7 @@ The engine fetches `.specs-framework` once into the user data dir and re-uses it
 - Location: `os.UserCacheDir()` + `/specs-toolchain/framework/<ref>/`. On Linux that resolves to `${XDG_CACHE_HOME:-~/.cache}/specs-toolchain/framework/<ref>/`; on macOS `~/Library/Caches/specs-toolchain/framework/<ref>/`; on Windows `%LocalAppData%\specs-toolchain\framework\<ref>`.
 - Version pin: `framework_ref` in `.specs.yaml` (a tag or commit). The host commits **only** `.specs.yaml`; nothing else.
 - Refreshing: `specs framework update --to <ref>` rewrites `framework_ref` and re-fetches if needed.
-- This is what `specs bootstrap` and `specs init` give you by default.
+- This is what `specs init` gives you by default.
 
 ### dev — a regular checkout you can edit
 

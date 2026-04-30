@@ -36,7 +36,7 @@ result via [`specs framework add`](manage-framework-registry.md).
 2. Author templates, process docs, skills, and agents.
 3. `git init`, commit, push to a remote.
 4. Register: `specs framework add my-org --url <remote> --ref main`.
-5. Use it: [`specs bootstrap --framework my-org`](bootstrap-host.md).
+5. Use it: [`specs init --framework my-org`](setup-host.md).
 
 ### Iteration
 

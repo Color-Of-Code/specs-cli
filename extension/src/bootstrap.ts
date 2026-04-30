@@ -1,20 +1,16 @@
-// Bootstrap wizard. Maps multi-step QuickPick answers to a
-// 'specs bootstrap ...' invocation.
+// Init wizard. Maps multi-step QuickPick answers to a 'specs init ...'
+// invocation. Surface name kept as `specs.bootstrap` for stable keybindings.
 import * as vscode from "vscode";
 import { runInTerminal, runAndCapture, getOutput } from "./engine";
 
-interface BootstrapAnswers {
-  layout: "folder" | "submodule";
-  specsUrl?: string;
-  specsRef?: string;
+interface InitAnswers {
+  framework: string;
   frameworkMode: "managed" | "submodule" | "folder" | "vendor";
-  frameworkUrl: string;
-  frameworkRef: string;
   withModel: boolean;
   withVscode: boolean;
 }
 
-const DEFAULT_FRAMEWORK_URL = "https://github.com/Color-Of-Code/specs-framework.git";
+const DEFAULT_FRAMEWORK = "https://github.com/Color-Of-Code/specs-framework.git@main";
 
 export async function runBootstrapWizard(context: vscode.ExtensionContext): Promise<void> {
   const folder = pickFolder();
@@ -22,49 +18,19 @@ export async function runBootstrapWizard(context: vscode.ExtensionContext): Prom
     return;
   }
 
-  const layout = await pickLayout();
-  if (!layout) {
+  const framework = await vscode.window.showInputBox({
+    prompt:
+      "Framework source (--framework): registered name, name@ref, git URL[@ref], or local path",
+    value: DEFAULT_FRAMEWORK,
+    ignoreFocusOut: true,
+    validateInput: (v) => (v.trim().length === 0 ? "framework source is required" : null),
+  });
+  if (framework === undefined) {
     return;
-  }
-
-  let specsUrl: string | undefined;
-  let specsRef: string | undefined;
-  if (layout === "submodule") {
-    specsUrl = await vscode.window.showInputBox({
-      prompt: "Git URL of the host's specs repo (--specs-url)",
-      placeHolder: "https://github.com/<org>/<host-specs>.git",
-      ignoreFocusOut: true,
-      validateInput: (v) => (v.trim().length === 0 ? "URL is required for submodule layout" : null),
-    });
-    if (!specsUrl) {
-      return;
-    }
-    specsRef = await vscode.window.showInputBox({
-      prompt: "Branch/tag for the specs submodule (optional)",
-      placeHolder: "main",
-      ignoreFocusOut: true,
-    });
   }
 
   const frameworkMode = await pickFrameworkMode();
   if (!frameworkMode) {
-    return;
-  }
-
-  const frameworkUrl = await vscode.window.showInputBox({
-    prompt: "Framework content git URL (--framework-url)",
-    value: DEFAULT_FRAMEWORK_URL,
-    ignoreFocusOut: true,
-  });
-  if (frameworkUrl === undefined) {
-    return;
-  }
-  const frameworkRef = await vscode.window.showInputBox({
-    prompt: "Framework content ref (--framework-ref)",
-    value: "main",
-    ignoreFocusOut: true,
-  });
-  if (frameworkRef === undefined) {
     return;
   }
 
@@ -85,23 +51,18 @@ export async function runBootstrapWizard(context: vscode.ExtensionContext): Prom
   const withModel = extras.some((e) => e.label.startsWith("Create model"));
   const withVscode = extras.some((e) => e.label.startsWith("Write .vscode"));
 
-  const answers: BootstrapAnswers = {
-    layout,
-    specsUrl,
-    specsRef,
+  const answers: InitAnswers = {
+    framework: framework.trim(),
     frameworkMode,
-    frameworkUrl,
-    frameworkRef,
     withModel,
     withVscode,
   };
 
   const args = buildArgs(answers);
 
-  // Show dry-run preview first.
   const out = getOutput();
   out.show(true);
-  out.appendLine("Specs bootstrap (dry-run preview)");
+  out.appendLine("Specs init (dry-run preview)");
   const preview = await runAndCapture(context, [...args, "--dry-run"], folder.uri.fsPath);
   out.appendLine(preview.stdout);
   if (preview.stderr) {
@@ -109,7 +70,7 @@ export async function runBootstrapWizard(context: vscode.ExtensionContext): Prom
   }
   if (preview.exitCode !== 0) {
     vscode.window.showErrorMessage(
-      `bootstrap dry-run failed (exit ${preview.exitCode}). See Specs output.`,
+      `init dry-run failed (exit ${preview.exitCode}). See Specs output.`,
     );
     return;
   }
@@ -123,24 +84,11 @@ export async function runBootstrapWizard(context: vscode.ExtensionContext): Prom
   if (choice !== "Run") {
     return;
   }
-  runInTerminal(context, args, folder.uri.fsPath, "Specs: bootstrap");
+  runInTerminal(context, args, folder.uri.fsPath, "Specs: init");
 }
 
-function buildArgs(a: BootstrapAnswers): string[] {
-  const args = ["bootstrap", "--layout", a.layout];
-  if (a.layout === "submodule" && a.specsUrl) {
-    args.push("--specs-url", a.specsUrl);
-    if (a.specsRef) {
-      args.push("--specs-ref", a.specsRef);
-    }
-  }
-  args.push("--framework-mode", a.frameworkMode);
-  if (a.frameworkUrl) {
-    args.push("--framework-url", a.frameworkUrl);
-  }
-  if (a.frameworkRef) {
-    args.push("--framework-ref", a.frameworkRef);
-  }
+function buildArgs(a: InitAnswers): string[] {
+  const args = ["init", "--framework", a.framework, "--framework-mode", a.frameworkMode];
   if (a.withModel) {
     args.push("--with-model");
   }
@@ -154,42 +102,20 @@ function pickFolder(): vscode.WorkspaceFolder | undefined {
   const folders = vscode.workspace.workspaceFolders ?? [];
   if (folders.length === 0) {
     vscode.window.showWarningMessage(
-      "Specs: open a folder first; bootstrap operates on the active workspace.",
+      "Specs: open a folder first; init operates on the active workspace.",
     );
     return undefined;
   }
   if (folders.length === 1) {
     return folders[0];
   }
-  // Multi-root: would require a separate prompt; defer for now.
   vscode.window.showWarningMessage(
-    "Specs: multi-root workspaces are not yet supported by the bootstrap wizard.",
+    "Specs: multi-root workspaces are not yet supported by the init wizard.",
   );
   return undefined;
 }
 
-async function pickLayout(): Promise<BootstrapAnswers["layout"] | undefined> {
-  const items: vscode.QuickPickItem[] = [
-    {
-      label: "Folder",
-      description: "specs/ is a plain folder in the host repo (recommended for new repos)",
-    },
-    {
-      label: "Submodule",
-      description: "specs/ is a git submodule of an existing specs repo",
-    },
-  ];
-  const pick = await vscode.window.showQuickPick(items, {
-    placeHolder: "How should specs/ be materialised?",
-    ignoreFocusOut: true,
-  });
-  if (!pick) {
-    return undefined;
-  }
-  return pick.label === "Submodule" ? "submodule" : "folder";
-}
-
-async function pickFrameworkMode(): Promise<BootstrapAnswers["frameworkMode"] | undefined> {
+async function pickFrameworkMode(): Promise<InitAnswers["frameworkMode"] | undefined> {
   const items: vscode.QuickPickItem[] = [
     {
       label: "managed",
@@ -200,11 +126,11 @@ async function pickFrameworkMode(): Promise<BootstrapAnswers["frameworkMode"] | 
     { label: "vendor", description: "snapshot .specs-framework without git history" },
   ];
   const pick = await vscode.window.showQuickPick(items, {
-    placeHolder: "How should .specs-framework be materialised?",
+    placeHolder: "How should .specs-framework be materialised? (ignored for local paths)",
     ignoreFocusOut: true,
   });
   if (!pick) {
     return undefined;
   }
-  return pick.label as BootstrapAnswers["frameworkMode"];
+  return pick.label as InitAnswers["frameworkMode"];
 }

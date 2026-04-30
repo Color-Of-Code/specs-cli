@@ -25,7 +25,7 @@ repos: ...
 
 ## Using a named framework
 
-When a [framework registry](#framework-registry) is configured, the toolchain resolves `framework_url`/`framework_ref` (or `framework_dir`) from the named entry. The `.specs.yaml` still stores the resolved values — the registry is only consulted at `init`/`bootstrap` time.
+When a [framework registry](#framework-registry) is configured, the toolchain resolves `framework_url`/`framework_ref` (or `framework_dir`) from the named entry. The `.specs.yaml` still stores the resolved values — the registry is only consulted at `init` time.
 
 ## Optional knobs
 
@@ -63,7 +63,7 @@ Only include keys you want to override — omitted keys use the compiled-in defa
 
 ## Framework registry
 
-The framework registry is a **user-level** configuration file that maps short names to framework sources. It is read by `specs init`, `specs bootstrap`, and `specs framework` commands.
+The framework registry is a **user-level** configuration file that maps short names to framework sources. It is read by `specs init` and `specs framework` commands.
 
 ### Location
 
@@ -100,9 +100,8 @@ frameworks:
 
 ### Resolution order
 
-When `specs init` or `specs bootstrap` determine which framework to use:
+When `specs init` determines which framework to use:
 
-1. Explicit `--framework-url` / `--framework-dir` flags (highest priority).
-2. `--framework <name>` flag — looked up in the registry.
-3. The `default` registry entry (if it exists and no flags override).
-4. Hard-coded fallback: `https://github.com/Color-Of-Code/specs-framework.git@main`.
+1. Explicit `--framework <source>` value (highest priority): a remote URL `[@ref]`, a local path, or a registry name `[@ref]`.
+2. The registry's `default` entry (if it exists and `--framework` is omitted).
+3. Hard-coded fallback: `https://github.com/Color-Of-Code/specs-framework.git@main`.

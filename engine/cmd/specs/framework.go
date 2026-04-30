@@ -65,7 +65,7 @@ func cmdFrameworkUpdate(args []string) error {
 	}
 
 	if cfg.FrameworkDir == "" {
-		return exitWith(1, "framework_dir not found; run `specs bootstrap` (managed) or set framework_dir (dev)")
+		return exitWith(1, "framework_dir not found; run `specs init` (managed) or set framework_dir (dev)")
 	}
 
 	switch cfg.FrameworkMode {
@@ -89,9 +89,9 @@ func cmdFrameworkUpdate(args []string) error {
 		}
 		return nil
 	case config.FrameworkModeVendor:
-		return exitWith(2, "framework_mode=vendor: re-run `specs bootstrap --framework-mode vendor --framework-ref <ref>` to refresh")
+		return exitWith(2, "framework_mode=vendor: re-run `specs init --framework-mode vendor --framework <source>@<ref>` to refresh")
 	case config.FrameworkModeMissing:
-		return exitWith(1, "framework_dir is missing on disk; run `specs bootstrap`")
+		return exitWith(1, "framework_dir is missing on disk; run `specs init`")
 	default:
 		return exitWith(1, "unknown framework_mode %q", cfg.FrameworkMode)
 	}

@@ -65,7 +65,7 @@ also keeps component baselines aligned with their upstream repositories.
 6. The CR is drained (`specs cr drain --id <NNN>`) and merged: files move
    into their canonical homes under `model/`.
 
-Setup tasks (installing the engine, bootstrapping a host repo, managing
+Setup tasks (installing the engine, initialising a host repo, managing
 the framework registry) are one-time prerequisites and are not part of
 the authoring chain. See [overview.md](overview.md) and
 [install.md](install.md).

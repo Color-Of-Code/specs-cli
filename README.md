@@ -18,7 +18,7 @@ You can use either one alone, or install both side by side.
    code --install-extension specs-<your-platform>.vsix
    ```
 
-3. Open a workspace and run **Specs: Bootstrap** (new project) or **Specs: Doctor** (existing project) from the Command Palette.
+3. Open a workspace and run **Specs: Init host** (new or existing project) or **Specs: Doctor** from the Command Palette.
 
 The extension uses its bundled binary by default, so no separate engine install is required. See [extension/README.md](extension/README.md) for the settings reference.
 

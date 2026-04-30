@@ -90,7 +90,7 @@ func cmdDoctor(args []string) error {
 			fmt.Printf("framework rev:    %s\n", rev)
 		}
 	} else {
-		fmt.Println("framework dir:    <missing> (run `specs bootstrap` or set framework_url/framework_dir)")
+		fmt.Println("framework dir:    <missing> (run `specs init` or set framework_url/framework_dir)")
 	}
 	fmt.Printf("model dir:        %s\n", cfg.ModelDir)
 	fmt.Printf("change-requests:  %s\n", cfg.ChangeRequestsDir)

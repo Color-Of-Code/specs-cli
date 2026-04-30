@@ -21,12 +21,11 @@ For a one-page summary of what the engine delivers, see
 
 ## Setup (one-off)
 
-| Use case                                                       | When                                     |
-| -------------------------------------------------------------- | ---------------------------------------- |
-| [Bootstrap a new specs host](bootstrap-host.md)                | Starting a new repo                      |
-| [Initialize specs in an existing repo](init-existing-repo.md)  | Onboarding an existing repo              |
-| [Diagnose the environment](diagnose-environment.md)            | Verifying the install or troubleshooting |
-| [Update the framework content layer](update-framework.md)      | Picking up a new framework release       |
-| [Configure VS Code integration](configure-vscode.md)           | Optional editor wiring                   |
-| [Manage the framework registry](manage-framework-registry.md)  | Per-machine framework shortcuts          |
-| [Seed a brand-new framework](seed-new-framework.md)            | Authoring a bespoke framework            |
+| Use case                                                      | When                                     |
+| ------------------------------------------------------------- | ---------------------------------------- |
+| [Set up a host](setup-host.md)                                | Starting a new repo or onboarding one    |
+| [Diagnose the environment](diagnose-environment.md)           | Verifying the install or troubleshooting |
+| [Update the framework content layer](update-framework.md)     | Picking up a new framework release       |
+| [Configure VS Code integration](configure-vscode.md)          | Optional editor wiring                   |
+| [Manage the framework registry](manage-framework-registry.md) | Per-machine framework shortcuts          |
+| [Seed a brand-new framework](seed-new-framework.md)           | Authoring a bespoke framework            |

@@ -13,7 +13,7 @@ The extension bundles a matching `specs` binary, so installing it is the only st
    code --install-extension specs-<your-platform>.vsix
    ```
 
-3. Open a workspace that contains `.specs.yaml` (or run **Specs: Bootstrap** from the palette to create one).
+3. Open a workspace that contains `.specs.yaml` (or run **Specs: Init host** from the palette to create one).
 
 The extension never requires a separately installed engine. If you happen to have one on `PATH`, you can opt in with the `specs.useGlobalBinary` setting; see [extension/README.md](../extension/README.md) for the full settings reference.
 
@@ -42,7 +42,7 @@ Installing the extension and the engine side by side is fine and common: the ext
 
 ## Advanced: starting with a custom framework
 
-By default, `specs init` and `specs bootstrap` pull the official [specs-framework](https://github.com/Color-Of-Code/specs-framework) content. If your organisation maintains its own framework, pass `--framework <name>` (resolved via the [framework registry](configuration.md#framework-registry)) or `--framework-url <git-url>`.
+By default, `specs init` pulls the official [specs-framework](https://github.com/Color-Of-Code/specs-framework) content. If your organisation maintains its own framework, pass `--framework <source>` (registered name, git URL, or local path).
 
 If you need to create a **brand-new framework from scratch** rather than forking an existing one:
 

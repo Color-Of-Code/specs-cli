@@ -13,7 +13,7 @@ part of the authoring chain.
 ## Purpose
 
 Pick up template fixes, new lint rules, or process updates published by
-the framework maintainer without re-bootstrapping the host.
+the framework maintainer without re-running the full setup.
 
 ## Entry point
 
