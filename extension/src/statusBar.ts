@@ -1,6 +1,5 @@
 // Phase E4 — Status bar item showing current CR slug or tools_dir SHA.
 import * as cp from "child_process";
-import * as path from "path";
 import * as vscode from "vscode";
 import { runAndCapture, findSpecsFolder, findSpecsRoot } from "./cli";
 
@@ -14,15 +13,15 @@ interface DoctorJSON {
   compatible_message?: string;
 }
 
-const REFRESH_INTERVAL_MS = 30_000;
+// Coalesce burst events (e.g. multiple file saves in quick succession) into
+// a single CLI invocation.
+const REFRESH_DEBOUNCE_MS = 250;
 
 export function registerStatusBar(context: vscode.ExtensionContext): void {
   const item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   item.command = "workbench.action.quickOpen";
   item.tooltip = "Specs (click to open palette)";
   context.subscriptions.push(item);
-
-  let timer: NodeJS.Timeout | undefined;
 
   const refresh = async () => {
     const folder = findSpecsFolder();
@@ -62,20 +61,59 @@ export function registerStatusBar(context: vscode.ExtensionContext): void {
     item.show();
   };
 
-  refresh();
-  timer = setInterval(refresh, REFRESH_INTERVAL_MS);
-  context.subscriptions.push({ dispose: () => timer && clearInterval(timer) });
+  let pending: NodeJS.Timeout | undefined;
+  const scheduleRefresh = () => {
+    if (pending) {
+      clearTimeout(pending);
+    }
+    pending = setTimeout(() => {
+      pending = undefined;
+      void refresh();
+    }, REFRESH_DEBOUNCE_MS);
+  };
+  context.subscriptions.push({
+    dispose: () => {
+      if (pending) {
+        clearTimeout(pending);
+      }
+    },
+  });
 
-  // Re-run on workspace folder changes and on .specs.yaml saves.
-  context.subscriptions.push(
-    vscode.workspace.onDidChangeWorkspaceFolders(refresh),
-    vscode.workspace.onDidSaveTextDocument((doc) => {
-      if (path.basename(doc.fileName) === ".specs.yaml") {
-        refresh();
+  // Initial render.
+  void refresh();
+
+  // Event-driven refresh: workspace, config, branch and focus changes.
+  const folder = findSpecsFolder();
+  const subscriptions: vscode.Disposable[] = [
+    vscode.workspace.onDidChangeWorkspaceFolders(scheduleRefresh),
+    vscode.window.onDidChangeWindowState((s) => {
+      if (s.focused) {
+        scheduleRefresh();
       }
     }),
     vscode.commands.registerCommand("specs.statusBar.refresh", refresh),
-  );
+  ];
+
+  if (folder) {
+    // Watch `.specs.yaml` anywhere under the workspace folder.
+    const cfgWatcher = vscode.workspace.createFileSystemWatcher(
+      new vscode.RelativePattern(folder, "**/.specs.yaml"),
+    );
+    cfgWatcher.onDidCreate(scheduleRefresh);
+    cfgWatcher.onDidChange(scheduleRefresh);
+    cfgWatcher.onDidDelete(scheduleRefresh);
+    subscriptions.push(cfgWatcher);
+
+    // Watch `.git/HEAD` for branch switches (covers terminal git checkouts).
+    const headWatcher = vscode.workspace.createFileSystemWatcher(
+      new vscode.RelativePattern(folder, ".git/HEAD"),
+    );
+    headWatcher.onDidChange(scheduleRefresh);
+    headWatcher.onDidCreate(scheduleRefresh);
+    subscriptions.push(headWatcher);
+  }
+
+  context.subscriptions.push(...subscriptions);
 }
 
 function currentBranch(repoRoot: string): string {
