@@ -3,6 +3,7 @@
   "displayName": "Specs",
   "description": "VS Code support for the specs toolchain: lint, change-requests, traceability visualisation.",
   "version": "0.1.0",
+  "packageManager": "pnpm@10.33.2",
   "publisher": "Color-Of-Code",
   "license": "GPL-3.0-only",
   "repository": {
@@ -245,7 +246,7 @@
     "fetch-mermaid": "node -e \"require('https').get('https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js',r=>r.pipe(require('fs').createWriteStream('media/mermaid.min.js')))\"",
     "package": "vsce package --no-dependencies",
     "package:bundled": "node --experimental-strip-types ./scripts/build-extension.ts",
-    "deploy-dev": "pnpm --dir .. run build:cli && pnpm run compile && pnpm run symlink",
+    "deploy-dev": "cd ../cli/cmd/specs && go build -o ../../../specs && cd ../../../extension && pnpm run compile && pnpm run symlink",
     "symlink": "node ./scripts/create-symlink.mjs"
   },
   "devDependencies": {
