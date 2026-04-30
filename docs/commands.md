@@ -1,6 +1,6 @@
 # Command reference
 
-Every command below is reachable both as `specs <command>` on the terminal and from the VS Code palette as **Specs: …**. All write commands accept `--dry-run` where applicable.
+Every command below is reachable as `specs <command>` on the terminal. Most are also exposed in the VS Code palette as **Specs: …**; admin-only commands (`init`, `format`, `vscode init`, `framework list|add|remove|seed`) are terminal-only. All write commands accept `--dry-run` where applicable.
 
 ## Core commands
 

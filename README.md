@@ -4,7 +4,7 @@ Tooling for the [specs framework](https://github.com/Color-Of-Code/specs-framewo
 
 It ships in two flavours that share the same engine:
 
-1. **VS Code extension (recommended)** — bundles the `specs` binary and exposes every command from the palette, the Specs view, and tasks. Nothing extra to install.
+1. **VS Code extension (recommended)** — bundles the `specs` binary and exposes the day-to-day commands from the palette, the Specs view, and tasks. Nothing extra to install.
 2. **Engine only** — a single cross-platform Go binary for terminal users and CI.
 
 You can use either one alone, or install both side by side.
