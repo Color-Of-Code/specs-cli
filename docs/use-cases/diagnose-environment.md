@@ -6,9 +6,9 @@ Print the engine version, resolved specs root, host repo, framework dir,
 framework mode, and any version-drift warnings between the binary and the
 framework content.
 
-## Actors
+## Owner
 
-Any actor — first call when something is not working locally.
+**Any user** *(role)* — see [../roles.md](../roles.md). First call when something is not working locally.
 
 ## Purpose
 

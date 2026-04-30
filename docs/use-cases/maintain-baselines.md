@@ -6,10 +6,9 @@ Verify or refresh the SHAs recorded for each tracked component in the
 baselines table, so reviewers see exactly which upstream commit a
 component spec was written against.
 
-## Actors
+## Owner
 
-**Architect** — owns components and the baselines table that pins each
-of them to an upstream commit.
+**Architect** *(actor)* — see [../actors.md](../actors.md). Owns components and the baselines table that pins each of them to an upstream commit.
 
 ## Purpose
 

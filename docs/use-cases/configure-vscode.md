@@ -5,10 +5,9 @@
 Write `.vscode/tasks.json` so every specs engine command is reachable
 from the VS Code task runner with no manual JSON authoring.
 
-## Actors
+## Owner
 
-One-off setup task — performed by any contributor who wants editor
-integration locally.
+**Project owner** *(role)* when seeding tasks for the team, or **Any user** *(role)* configuring their own checkout — see [../roles.md](../roles.md).
 
 ## Purpose
 

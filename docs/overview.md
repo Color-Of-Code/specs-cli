@@ -32,7 +32,8 @@ Stakeholder ──► Author ──► Analyst ──► Architect
 
 Stakeholders describe needs as **change requests**; authors, analysts, and
 architects refine that input into model artifacts. See
-[actors.md](actors.md) for details.
+[actors.md](actors.md) for details. Setup, review, and framework distribution
+work is described as *operational roles* in [roles.md](roles.md).
 
 ## The change-request lifecycle
 

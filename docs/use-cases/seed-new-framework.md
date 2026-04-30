@@ -7,10 +7,9 @@ Pre-create the minimal directory skeleton of a fresh framework
 directory, ready for the caller to author content and publish to a git
 remote.
 
-## Actors
+## Owner
 
-Advanced setup task — performed once by an organisation that needs a
-bespoke framework. Not part of the authoring chain in a host project.
+**Framework maintainer** *(role)* — see [../roles.md](../roles.md). Authoring a bespoke framework that downstream host projects can consume. Not part of the authoring chain inside a host project.
 
 ## Purpose
 

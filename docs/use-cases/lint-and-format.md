@@ -5,10 +5,9 @@
 Auto-format markdown files in place, and run style / link / baseline
 lint checks against the specs tree.
 
-## Actors
+## Owner
 
-Any actor — Author, Analyst, and Architect all run these commands while
-iterating on a CR. Also run by CI on every push.
+Any authoring actor — **Author**, **Analyst**, and **Architect** all run these commands while iterating on a CR. Also run by CI on every push. See [../actors.md](../actors.md).
 
 ## Purpose
 

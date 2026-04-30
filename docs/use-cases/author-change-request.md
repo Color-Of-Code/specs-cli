@@ -6,14 +6,12 @@ Create a numbered change request (CR), draft requirements / features /
 components inside it, then drain the finalised files into their
 canonical homes under `model/`.
 
-## Actors
+## Owner
 
-- **Stakeholder** (initiator) — opens the CR with input describing the
-  need.
-- **Author** drafts the requirements, **Analyst** the features, and
-  **Architect** the components / services / APIs inside the same CR.
+The authoring chain itself — see [../actors.md](../actors.md):
 
-See [../actors.md](../actors.md).
+- **Stakeholder** *(actor)* (initiator) opens the CR with input describing the need.
+- **Author** *(actor)* drafts the requirements, **Analyst** *(actor)* the features, and **Architect** *(actor)* the components / services / APIs inside the same CR.
 
 ## Purpose
 

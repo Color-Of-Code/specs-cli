@@ -1,14 +1,15 @@
 # Roles
 
-Operational hats people put on while using the toolchain. One person typically wears several of them in the same repository. The model-authoring chain itself (stakeholder → author → analyst → architect) is described separately in [actors.md](actors.md); this page covers the surrounding setup, review, and maintenance work.
+Operational hats people put on **outside** the authoring chain — setup, review, and framework distribution. For artifact ownership inside the authoring chain (Stakeholder, Author, Analyst, Architect), see [actors.md](actors.md).
 
-| Role             | Responsibility                                                                                | Typical commands                                                |
-| ---------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| Any user         | Get the engine working locally; curate the per-machine framework registry                     | `specs doctor`, `specs framework add` / `list` / `remove`       |
-| Project owner    | Stand up a host repository, choose `managed` vs. `local` mode, and seed editor tasks          | `specs init`, `specs vscode init`                               |
-| Reviewer         | Confirm a change request is structurally sound and traceable                                  | `specs link check`, `specs visualize traceability`              |
-| Component owner  | Keep recorded component baselines aligned with the upstream repository revision they describe | `specs lint --baselines`, `specs baseline update`               |
-| Framework author | Create, evolve, and distribute framework content                                              | `specs framework seed`, `specs framework update` on downstreams |
+One person typically wears several roles in the same repository.
+
+| Role                 | Responsibility                                                                          | Typical commands                                                |
+| -------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Any user             | Get the engine working locally; curate the per-machine framework registry               | `specs doctor`, `specs framework add` / `list` / `remove`       |
+| Project owner        | Stand up a host repository, choose `managed` vs. `local` mode, and seed editor tasks    | `specs init`, `specs vscode init`, `specs framework update`     |
+| Reviewer             | Confirm a proposed change request is structurally sound and traceable before it lands   | `specs link check`, `specs visualize traceability`              |
+| Framework maintainer | Create, evolve, and distribute framework content for downstream host repos to consume   | `specs framework seed`; publishes a framework repo and registry |
 
 ## Notes
 
@@ -16,4 +17,5 @@ Operational hats people put on while using the toolchain. One person typically w
 - **Project owner** picks one framework handling mode in `.specs.yaml`:
   - `managed` — the engine fetches the framework into the user cache; the host commits only `.specs.yaml`. This is the default.
   - `local` — `.specs.yaml` points at a directory on disk owned by the user (regular checkout, git submodule, or vendored snapshot — all treated the same).
-- **Framework author** publishes a framework repository and registers it (or documents how consumers should). Day-to-day they also act as a project owner and reviewer on their own framework repo.
+- **Baselines** for tracked components are owned by the **Architect** actor (see [actors.md](actors.md)), not by a separate role — the same person who decomposes features into components keeps their pinned commits current.
+- **Framework maintainer** is also a project owner and reviewer on the framework's own repository; the role here describes only the *downstream-facing* responsibility of publishing framework content.

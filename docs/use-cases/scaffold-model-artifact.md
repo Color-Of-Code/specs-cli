@@ -5,13 +5,13 @@
 Instantiate a single template — requirement, feature, component, API,
 or service — at a target path with placeholders pre-filled.
 
-## Actors
+## Owner
 
-Main actor depends on the artifact kind:
+Depends on the artifact kind (see [../actors.md](../actors.md)):
 
-- **Author** for `requirement`.
-- **Analyst** for `feature`.
-- **Architect** for `component`, `service`, `api`.
+- **Author** *(actor)* for `requirement`.
+- **Analyst** *(actor)* for `feature`.
+- **Architect** *(actor)* for `component`, `service`, `api`.
 
 ## Purpose
 

@@ -7,10 +7,9 @@ a single command: `specs init`. It works whether the target directory is
 empty, brand-new, or already contains `model/` and `change-requests/`
 content.
 
-## Actors
+## Owner
 
-One-off setup task — performed by whoever stands up the host repo. Not
-part of the authoring chain.
+**Project owner** *(role)* — see [../roles.md](../roles.md). Stands up the host repo and chooses managed vs. local mode. Not part of the authoring chain.
 
 ## Purpose
 

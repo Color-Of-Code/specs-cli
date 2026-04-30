@@ -6,12 +6,12 @@ Check that every requirement listed as `Implemented By` a feature or
 component is reciprocally listed in that feature/component's
 `Requirements` section, and vice versa.
 
-## Actors
+## Owner
 
-- **Analyst** — owns the requirement ↔ feature links.
-- **Architect** — owns the feature ↔ component / service / API links.
+**Reviewer** *(role)* — see [../roles.md](../roles.md). Typically the **Analyst** or **Architect** themselves run this check before submitting a CR for review:
 
-Both run this check before submitting a CR for review.
+- **Analyst** owns the requirement ↔ feature links.
+- **Architect** owns the feature ↔ component / service / API links.
 
 ## Purpose
 

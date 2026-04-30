@@ -4,6 +4,9 @@ The toolchain is built around a short, linear authoring chain. Four actors
 cover everything the engine is concerned with; one person may hold several
 of these roles in the same project.
 
+Setup, review, and framework-distribution work happens **outside** this
+chain and is described as *operational roles* in [roles.md](roles.md).
+
 ```text
 Stakeholder ──► Author ──► Analyst ──► Architect
    input        requirements   features    components / services / APIs

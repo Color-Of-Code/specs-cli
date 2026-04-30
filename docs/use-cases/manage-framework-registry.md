@@ -7,10 +7,9 @@ Maintain the user-level mapping from short framework names (e.g.
 `specs init` can be invoked with `--framework <name>` instead of raw
 URLs.
 
-## Actors
+## Owner
 
-Per-machine setup task — performed by each contributor on their own
-workstation. Not part of the authoring chain.
+**Any user** *(role)* — see [../roles.md](../roles.md). Each contributor maintains the framework registry on their own workstation. Not part of the authoring chain.
 
 ## Purpose
 
